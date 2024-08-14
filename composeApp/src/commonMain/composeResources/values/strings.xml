@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="home_screen_title">Play a game of</string>
+    <string name="home_dice_icon_content_desc">Dice icon</string>
+    <string name="game_option_dice_poker">Dice Poker</string>
+    <string name="game_option_yahtzee">Yahtzee</string>
+    <string name="game_option_farkles">Farkles</string>
+    <string name="game_option_background_content_desc">Dice background image</string>
+</resources>
