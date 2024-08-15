@@ -2,8 +2,9 @@ package com.spoelt.luckydice.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
-val LightBlue = Color(0xFFB1D8FF)
-val LightPink = Color(0xFFFFC1E3)
+val lightBlue = Color(0xFFB1D8FF)
+val lightPink = Color(0xFFFFC1E3)
+val lightGray = Color(0x801b1b1b)
 
 val primaryLight = Color(0xFF3B6283)
 val onPrimaryLight = Color(0xFFFFFFFF)

@@ -26,14 +26,16 @@ fun HomeScreen(
 ) {
     Column(
         modifier = modifier
-            .safeDrawingPadding()
-            .padding(16.dp)
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .safeDrawingPadding()
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp),
             contentAlignment = Alignment.TopCenter
         ) {
             CardWithCutOutImage {

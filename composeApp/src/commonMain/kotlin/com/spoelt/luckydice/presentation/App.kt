@@ -1,7 +1,6 @@
 package com.spoelt.luckydice.presentation
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,13 +21,13 @@ fun App(
             darkTheme = darkTheme,
             dynamicColor = dynamicColor
         ) {
-            Scaffold(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .safeDrawingPadding()
-            ) {
+            Scaffold(modifier = Modifier.fillMaxSize()) {
                 HomeScreen(
-                    gameTypes = listOf(GameType.DICE_POKER, GameType.YAHTZEE, GameType.FARKLES),
+                    gameTypes = listOf(
+                        GameType.DICE_POKER,
+                        GameType.YAHTZEE,
+                        GameType.FARKLES
+                    ),
                     onGameTypeSelected = {
                         // navigate
                     }
