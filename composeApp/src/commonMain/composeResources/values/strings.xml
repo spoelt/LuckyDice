@@ -6,4 +6,10 @@
     <string name="game_option_yahtzee">Yahtzee</string>
     <string name="game_option_farkles">Farkles</string>
     <string name="game_option_background_content_desc">Dice background image</string>
+    <string name="select_number_of_players_title">Select number of players</string>
+    <string name="next_action">Next</string>
+    <string name="close_content_desc">Close</string>
+    <string name="back_content_desc">Back</string>
+    <string name="enter_player_names">Enter the players' names</string>
+    <string name="player_name">Player %1$s</string>
 </resources>

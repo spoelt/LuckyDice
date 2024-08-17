@@ -47,7 +47,10 @@ fun GameOption(
     Card(
         modifier = modifier
             .size(CARD_SIZE.dp)
-            .clickable { onGameTypeSelected(type) }
+            .clickable {
+                // TODO: remove once more games are available
+                if (type == GameType.DICE_POKER) onGameTypeSelected(type)
+            }
     ) {
         Box(contentAlignment = Alignment.Center) {
             Image(

@@ -3,12 +3,14 @@ package com.spoelt.luckydice.presentation.home
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,29 +26,33 @@ fun HomeScreen(
     gameTypes: List<GameType>,
     onGameTypeSelected: (GameType) -> Unit
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .safeDrawingPadding()
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp),
-            contentAlignment = Alignment.TopCenter
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            CardWithCutOutImage {
-                Header()
+            Box(
+                modifier = Modifier
+                    .safeDrawingPadding()
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                CardWithCutOutImage {
+                    Header()
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                GameOptions(
-                    gameTypes = gameTypes,
-                    onGameTypeSelected = onGameTypeSelected
-                )
+                    GameOptions(
+                        gameTypes = gameTypes,
+                        onGameTypeSelected = onGameTypeSelected
+                    )
+                }
             }
         }
     }
