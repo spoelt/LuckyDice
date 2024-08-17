@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.spoelt.luckydice.presentation.selectgameoptions.components.GameOptionsScaffold
 import com.spoelt.luckydice.presentation.selectgameoptions.components.LuckyDiceIconButton
 import luckydice.composeapp.generated.resources.Res
 import luckydice.composeapp.generated.resources.back_content_desc
@@ -48,9 +49,37 @@ fun EnterPlayerNames(
         players?.values?.none { it.isEmpty() } ?: false
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        bottomBar = {
+    GameOptionsScaffold(
+        modifier = modifier,
+        mainContent = {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                text = stringResource(Res.string.enter_player_names),
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.Center
+            )
+
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                players?.keys?.forEach { key ->
+                    OutlinedTextField(
+                        modifier = Modifier.fillMaxWidth(0.8f),
+                        value = players[key].orEmpty(),
+                        onValueChange = { name ->
+                            onUpdatePlayerName(key, name)
+                        },
+                        label = {
+                            Text(
+                                text = stringResource(Res.string.player_name, "${key+1}"),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    )
+                }
+            }
+        },
+        bottomBarContent = {
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -68,73 +97,9 @@ fun EnterPlayerNames(
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            contentAlignment = Alignment.TopCenter
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    text = stringResource(Res.string.enter_player_names),
-                    style = MaterialTheme.typography.headlineMedium,
-                    textAlign = TextAlign.Center
-                )
-
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    players?.keys?.forEach { key ->
-                        OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(0.8f),
-                            value = players[key].orEmpty(),
-                            onValueChange = { name ->
-                                onUpdatePlayerName(key, name)
-                            },
-                            label = {
-                                Text(
-                                    text = stringResource(Res.string.player_name, "${key+1}"),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.weight(2f))
-            }
-
-            LuckyDiceIconButton(
-                buttonModifier = Modifier
-                    .padding(16.dp)
-                    .size(48.dp)
-                    .align(Alignment.TopStart),
-                iconModifier = Modifier.size(24.dp).offset(x = (-2).dp),
-                onClick = onBackClick,
-                contentDescriptionId = Res.string.back_content_desc,
-                iconId = Res.drawable.ic_back
-            )
-
-            LuckyDiceIconButton(
-                buttonModifier = Modifier
-                    .padding(16.dp)
-                    .size(48.dp)
-                    .align(Alignment.TopEnd),
-                iconModifier = Modifier.size(28.dp),
-                onClick = onCloseClick,
-                contentDescriptionId = Res.string.close_content_desc,
-                iconId = Res.drawable.ic_close
-            )
-        }
-    }
+        },
+        isBackButtonVisible = true,
+        onBackClick = onBackClick,
+        onCloseClick = onCloseClick
+    )
 }
