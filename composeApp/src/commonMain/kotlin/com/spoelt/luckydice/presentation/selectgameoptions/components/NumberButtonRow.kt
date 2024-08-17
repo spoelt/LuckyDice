@@ -1,4 +1,4 @@
-package com.spoelt.luckydice.presentation.selectgameoptions.selectnumberofplayers
+package com.spoelt.luckydice.presentation.selectgameoptions.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun PlayerButtonRow(
+fun NumberButtonRow(
     range: IntRange,
     selectedNumber: Int,
     onClick: (Int) -> Unit
@@ -15,7 +15,7 @@ fun PlayerButtonRow(
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         range.forEach { i ->
-            PlayerButton(
+            NumberButton(
                 number = i,
                 isSelected = i == selectedNumber,
                 onClick = onClick

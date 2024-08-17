@@ -1,4 +1,4 @@
-package com.spoelt.luckydice.presentation.selectgameoptions.selectnumberofplayers
+package com.spoelt.luckydice.presentation.selectgameoptions.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -22,7 +22,7 @@ private val linearGradient = Brush.linearGradient(
 )
 
 @Composable
-fun PlayerButton(
+fun NumberButton(
     number: Int,
     isSelected: Boolean,
     onClick: (Int) -> Unit
@@ -39,13 +39,13 @@ fun PlayerButton(
         onClick = { onClick(number) },
         border = BorderStroke(
             width = if (isSelected) 4.dp else 0.dp,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.primary
         )
     ) {
         Text(
             text = "$number",
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onSurface
+            color = Color.Black
         )
     }
 }

@@ -1,39 +1,28 @@
 package com.spoelt.luckydice.presentation.selectgameoptions.enterplayernames
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.spoelt.luckydice.domain.GameType
+import com.spoelt.luckydice.domain.isDicePoker
 import com.spoelt.luckydice.presentation.selectgameoptions.components.GameOptionsScaffold
-import com.spoelt.luckydice.presentation.selectgameoptions.components.LuckyDiceIconButton
 import luckydice.composeapp.generated.resources.Res
-import luckydice.composeapp.generated.resources.back_content_desc
-import luckydice.composeapp.generated.resources.close_content_desc
 import luckydice.composeapp.generated.resources.enter_player_names
-import luckydice.composeapp.generated.resources.ic_back
-import luckydice.composeapp.generated.resources.ic_close
 import luckydice.composeapp.generated.resources.next_action
 import luckydice.composeapp.generated.resources.player_name
+import luckydice.composeapp.generated.resources.start_game
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -43,10 +32,18 @@ fun EnterPlayerNames(
     onCloseClick: () -> Unit,
     onBackClick: () -> Unit,
     players: Map<Int, String>?,
-    onUpdatePlayerName: (Int, String) -> Unit
+    onUpdatePlayerName: (Int, String) -> Unit,
+    type: GameType?
 ) {
     val isBottomBarButtonEnabled = remember(players) {
         players?.values?.none { it.isEmpty() } ?: false
+    }
+    val bottomBarStringResId = remember(type) {
+        if (type.isDicePoker()) {
+            Res.string.next_action
+        } else {
+            Res.string.start_game
+        }
     }
 
     GameOptionsScaffold(
@@ -71,10 +68,11 @@ fun EnterPlayerNames(
                         },
                         label = {
                             Text(
-                                text = stringResource(Res.string.player_name, "${key+1}"),
+                                text = stringResource(Res.string.player_name, "${key + 1}"),
                                 style = MaterialTheme.typography.bodyMedium
                             )
-                        }
+                        },
+                        singleLine = true
                     )
                 }
             }
@@ -93,7 +91,7 @@ fun EnterPlayerNames(
                 enabled = isBottomBarButtonEnabled
             ) {
                 Text(
-                    text = stringResource(Res.string.next_action),
+                    text = stringResource(bottomBarStringResId),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }

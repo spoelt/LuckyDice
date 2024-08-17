@@ -1,4 +1,4 @@
-package com.spoelt.luckydice.presentation.selectgameoptions.selectnumberofplayers
+package com.spoelt.luckydice.presentation.selectgameoptions.selectnumberofcolumns
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,31 +9,27 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.spoelt.luckydice.presentation.selectgameoptions.components.GameOptionsScaffold
+import com.spoelt.luckydice.presentation.selectgameoptions.components.NumberButton
 import com.spoelt.luckydice.presentation.selectgameoptions.components.NumberButtonRow
 import luckydice.composeapp.generated.resources.Res
-import luckydice.composeapp.generated.resources.next_action
-import luckydice.composeapp.generated.resources.select_number_of_players_title
+import luckydice.composeapp.generated.resources.select_number_of_columns_title
+import luckydice.composeapp.generated.resources.start_game
 import org.jetbrains.compose.resources.stringResource
 
-const val DEFAULT_NUM_OF_PLAYERS = 2
-
 @Composable
-fun SelectNumberOfPlayers(
+fun SelectNumberOfColumns(
     modifier: Modifier = Modifier,
-    numberOfPlayers: Int?,
+    selectedNumber: Int,
     onSelectedNumberChange: (Int) -> Unit,
     onNextClick: () -> Unit,
     onCloseClick: () -> Unit,
+    onBackClick: () -> Unit,
 ) {
-    val selectedNumber = remember(numberOfPlayers) {
-        numberOfPlayers ?: DEFAULT_NUM_OF_PLAYERS
-    }
-
     GameOptionsScaffold(
         modifier = modifier,
         mainContent = {
@@ -41,20 +37,23 @@ fun SelectNumberOfPlayers(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                text = stringResource(Res.string.select_number_of_players_title),
+                text = stringResource(Res.string.select_number_of_columns_title),
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Center
             )
 
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 NumberButtonRow(
                     range = 1..2,
                     selectedNumber = selectedNumber,
                     onClick = onSelectedNumberChange
                 )
-                NumberButtonRow(
-                    range = 3..4,
-                    selectedNumber = selectedNumber,
+                NumberButton(
+                    number = 3,
+                    isSelected = 3 == selectedNumber,
                     onClick = onSelectedNumberChange
                 )
             }
@@ -71,16 +70,13 @@ fun SelectNumberOfPlayers(
                 }
             ) {
                 Text(
-                    text = stringResource(Res.string.next_action),
+                    text = stringResource(Res.string.start_game),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
         },
-        isBackButtonVisible = false,
-        onBackClick = {
-            // do nothing - no back button available
-        },
+        isBackButtonVisible = true,
+        onBackClick = onBackClick,
         onCloseClick = onCloseClick
     )
 }
-

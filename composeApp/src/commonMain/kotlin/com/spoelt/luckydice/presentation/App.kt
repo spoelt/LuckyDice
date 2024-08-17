@@ -1,18 +1,23 @@
 package com.spoelt.luckydice.presentation
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.spoelt.luckydice.domain.isDicePoker
 import com.spoelt.luckydice.presentation.home.HomeScreen
 import com.spoelt.luckydice.presentation.home.HomeViewModel
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes.SelectNumberOfPlayers.getGameType
 import com.spoelt.luckydice.presentation.selectgameoptions.SelectGameOptionsViewModel
 import com.spoelt.luckydice.presentation.selectgameoptions.enterplayernames.EnterPlayerNames
+import com.spoelt.luckydice.presentation.selectgameoptions.selectnumberofcolumns.SelectNumberOfColumns
 import com.spoelt.luckydice.presentation.selectgameoptions.selectnumberofplayers.SelectNumberOfPlayers
 import com.spoelt.luckydice.presentation.theme.LuckyDiceTheme
 import org.koin.compose.KoinContext
@@ -27,6 +32,12 @@ fun App(
 ) {
     val navController = rememberNavController()
     val gameOptionsViewModel = koinViewModel<SelectGameOptionsViewModel>()
+
+    LaunchedEffect(Unit) {
+        gameOptionsViewModel.navigate.collect { route ->
+            navController.navigate(route)
+        }
+    }
 
     LuckyDiceTheme(
         darkTheme = darkTheme,
@@ -55,6 +66,10 @@ fun App(
                     arguments = NavigationRoutes.SelectNumberOfPlayers.createArgumentsList()
                 ) { backStackEntry ->
                     backStackEntry.arguments?.getGameType()?.let { type -> // TODO: update type specific setup when more games available
+                        LaunchedEffect(Unit) {
+                            gameOptionsViewModel.setGameType(type)
+                        }
+
                         val gameOptions by gameOptionsViewModel.gameOptions.collectAsStateWithLifecycle()
 
                         SelectNumberOfPlayers(
@@ -74,9 +89,17 @@ fun App(
 
                 composable(route = NavigationRoutes.EnterPlayerNames.route) {
                     val gameOptions by gameOptionsViewModel.gameOptions.collectAsStateWithLifecycle()
+                    val gameType by gameOptionsViewModel.gameType.collectAsStateWithLifecycle()
 
                     EnterPlayerNames(
-                        onNextClick = {},
+                        onNextClick = {
+                            val route = if (gameType.isDicePoker()) {
+                                NavigationRoutes.SelectNumberOfColumns.route
+                            } else {
+                                NavigationRoutes.GameScreen.route
+                            }
+                            navController.navigate(route)
+                        },
                         onBackClick = navController::popBackStack,
                         onCloseClick = {
                             navController.popBackStack(
@@ -85,7 +108,32 @@ fun App(
                             )
                         },
                         players = gameOptions.players,
-                        onUpdatePlayerName = gameOptionsViewModel::updatePlayerName
+                        onUpdatePlayerName = gameOptionsViewModel::updatePlayerName,
+                        type = gameType
+                    )
+                }
+
+                composable(route = NavigationRoutes.SelectNumberOfColumns.route) {
+                    val gameOptions by gameOptionsViewModel.gameOptions.collectAsStateWithLifecycle()
+
+                    SelectNumberOfColumns(
+                        selectedNumber = gameOptions.numberOfColumns,
+                        onCloseClick = {
+                            navController.popBackStack(
+                                route = NavigationRoutes.Home.route,
+                                inclusive = false
+                            )
+                        },
+                        onBackClick = navController::popBackStack,
+                        onSelectedNumberChange = gameOptionsViewModel::updateNumberOfColumns,
+                        onNextClick = gameOptionsViewModel::createGame
+                    )
+                }
+
+                composable(route = NavigationRoutes.GameScreen.route) {
+                    Text(
+                        modifier = Modifier.safeDrawingPadding(),
+                        text = "I'm a game"
                     )
                 }
             }

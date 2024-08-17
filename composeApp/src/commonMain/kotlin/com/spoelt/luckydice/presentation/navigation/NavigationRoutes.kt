@@ -8,11 +8,14 @@ import com.spoelt.luckydice.domain.GameType
 private const val HOME_ROUTE = "home"
 private const val SELECT_NUMBER_OF_PLAYERS_BASE_ROUTE = "select_number_of_players"
 private const val ENTER_PLAYER_NAMES_ROUTE = "enter_player_names"
+private const val SELECT_NUMBER_OF_COLUMNS_ROUTE = "select_number_of_columns"
+private const val GAME_SCREEN_ROUTE = "game_screen"
 
 sealed class NavigationRoutes(val route: String) {
     data object Home : NavigationRoutes(HOME_ROUTE)
 
-    data object SelectNumberOfPlayers : NavigationRoutes("$SELECT_NUMBER_OF_PLAYERS_BASE_ROUTE/{gameType}") {
+    data object SelectNumberOfPlayers :
+        NavigationRoutes("$SELECT_NUMBER_OF_PLAYERS_BASE_ROUTE/{gameType}") {
         private const val ARGUMENT_NAME = "gameType"
 
         fun createArgumentsList() = listOf(
@@ -32,5 +35,9 @@ sealed class NavigationRoutes(val route: String) {
         }
     }
 
-    data object EnterPlayerNames:NavigationRoutes(ENTER_PLAYER_NAMES_ROUTE)
+    data object EnterPlayerNames : NavigationRoutes(ENTER_PLAYER_NAMES_ROUTE)
+
+    data object SelectNumberOfColumns : NavigationRoutes(SELECT_NUMBER_OF_COLUMNS_ROUTE)
+
+    data object GameScreen : NavigationRoutes(GAME_SCREEN_ROUTE)
 }
