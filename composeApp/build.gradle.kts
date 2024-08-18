@@ -6,16 +6,21 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
+    sourceSets.commonMain {
+        kotlin.srcDir("build/generated/ksp/metadata")
+    }
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -26,7 +31,7 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -34,6 +39,7 @@ kotlin {
             implementation(libs.androidx.material3)
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            implementation(libs.room.runtime.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -48,6 +54,8 @@ kotlin {
             api(libs.koin.core)
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
+            implementation(libs.room.runtime)
+            implementation(libs.sqlite.bundled)
         }
     }
 }
@@ -89,3 +97,17 @@ android {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "${projectDir}/schemas")
+}
+
+dependencies {
+    listOf(
+        "kspAndroid",
+        "kspIosSimulatorArm64",
+        "kspIosX64",
+        "kspIosArm64"
+    ).forEach {
+        add(it, libs.room.compiler)
+    }
+}

@@ -3,13 +3,13 @@ package com.spoelt.luckydice.presentation.navigation
 import androidx.core.bundle.Bundle
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.spoelt.luckydice.domain.GameType
+import com.spoelt.luckydice.domain.model.GameType
 
 private const val HOME_ROUTE = "home"
 private const val SELECT_NUMBER_OF_PLAYERS_BASE_ROUTE = "select_number_of_players"
 private const val ENTER_PLAYER_NAMES_ROUTE = "enter_player_names"
 private const val SELECT_NUMBER_OF_COLUMNS_ROUTE = "select_number_of_columns"
-private const val GAME_SCREEN_ROUTE = "game_screen"
+private const val GAME_SCREEN_BASE_ROUTE = "game_screen"
 
 sealed class NavigationRoutes(val route: String) {
     data object Home : NavigationRoutes(HOME_ROUTE)
@@ -39,5 +39,21 @@ sealed class NavigationRoutes(val route: String) {
 
     data object SelectNumberOfColumns : NavigationRoutes(SELECT_NUMBER_OF_COLUMNS_ROUTE)
 
-    data object GameScreen : NavigationRoutes(GAME_SCREEN_ROUTE)
+    data object GameScreen : NavigationRoutes("$GAME_SCREEN_BASE_ROUTE/{gameId}") {
+        private const val ARGUMENT_GAME_ID = "gameId"
+
+        fun createArgumentsList() = listOf(
+            navArgument(ARGUMENT_GAME_ID) { type = NavType.LongType }
+        )
+
+        fun createRoute(gameId: Long): String {
+            return "$GAME_SCREEN_BASE_ROUTE/$gameId"
+        }
+
+        fun Bundle?.getGameId(): Long? {
+            if (this == null) return null
+
+            return this.getLong(ARGUMENT_GAME_ID)
+        }
+    }
 }

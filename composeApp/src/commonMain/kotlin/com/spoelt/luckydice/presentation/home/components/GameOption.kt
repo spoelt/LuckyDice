@@ -18,7 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.spoelt.luckydice.domain.GameType
+import com.spoelt.luckydice.domain.model.GameType
 import luckydice.composeapp.generated.resources.Res
 import luckydice.composeapp.generated.resources.dice_background
 import luckydice.composeapp.generated.resources.game_option_background_content_desc

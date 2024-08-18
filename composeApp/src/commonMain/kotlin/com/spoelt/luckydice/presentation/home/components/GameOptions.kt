@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
-import com.spoelt.luckydice.domain.GameType
+import com.spoelt.luckydice.domain.model.GameType
 import com.spoelt.luckydice.presentation.util.getScreenWidth
 import kotlin.math.floor
 

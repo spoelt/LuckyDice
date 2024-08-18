@@ -1,4 +1,4 @@
-package com.spoelt.luckydice.domain
+package com.spoelt.luckydice.domain.model
 
 enum class GameType(val value: String) {
     DICE_POKER("dice_poker"), YAHTZEE("yahtzee"), FARKLES("farkles");

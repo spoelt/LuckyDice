@@ -1,6 +1,8 @@
 package com.spoelt.luckydice.presentation
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -10,10 +12,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.spoelt.luckydice.domain.isDicePoker
+import com.spoelt.luckydice.domain.model.isDicePoker
 import com.spoelt.luckydice.presentation.home.HomeScreen
 import com.spoelt.luckydice.presentation.home.HomeViewModel
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes
+import com.spoelt.luckydice.presentation.navigation.NavigationRoutes.GameScreen.getGameId
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes.SelectNumberOfPlayers.getGameType
 import com.spoelt.luckydice.presentation.selectgameoptions.SelectGameOptionsViewModel
 import com.spoelt.luckydice.presentation.selectgameoptions.enterplayernames.EnterPlayerNames
@@ -65,26 +68,27 @@ fun App(
                     route = NavigationRoutes.SelectNumberOfPlayers.route,
                     arguments = NavigationRoutes.SelectNumberOfPlayers.createArgumentsList()
                 ) { backStackEntry ->
-                    backStackEntry.arguments?.getGameType()?.let { type -> // TODO: update type specific setup when more games available
-                        LaunchedEffect(Unit) {
-                            gameOptionsViewModel.setGameType(type)
-                        }
+                    backStackEntry.arguments?.getGameType()?.let { type ->
+                        // TODO: update type specific setup when more games available
+                            LaunchedEffect(Unit) {
+                                gameOptionsViewModel.setGameType(type)
+                            }
 
-                        val gameOptions by gameOptionsViewModel.gameOptions.collectAsStateWithLifecycle()
+                            val gameOptions by gameOptionsViewModel.gameOptions.collectAsStateWithLifecycle()
 
-                        SelectNumberOfPlayers(
-                            numberOfPlayers = gameOptions.numberOfPlayers,
-                            onSelectedNumberChange = gameOptionsViewModel::setNumberOfPlayers,
-                            onNextClick = {
-                                gameOptionsViewModel.initializePlayersMap()
+                            SelectNumberOfPlayers(
+                                numberOfPlayers = gameOptions.numberOfPlayers,
+                                onSelectedNumberChange = gameOptionsViewModel::setNumberOfPlayers,
+                                onNextClick = {
+                                    gameOptionsViewModel.initializePlayersMap()
 
-                                navController.navigate(
-                                    NavigationRoutes.EnterPlayerNames.route
-                                )
-                            },
-                            onCloseClick = navController::popBackStack,
-                        )
-                    } ?: navController.popBackStack()
+                                    navController.navigate(
+                                        NavigationRoutes.EnterPlayerNames.route
+                                    )
+                                },
+                                onCloseClick = navController::popBackStack,
+                            )
+                        } ?: navController.popBackStack()
                 }
 
                 composable(route = NavigationRoutes.EnterPlayerNames.route) {
@@ -130,11 +134,21 @@ fun App(
                     )
                 }
 
-                composable(route = NavigationRoutes.GameScreen.route) {
-                    Text(
-                        modifier = Modifier.safeDrawingPadding(),
-                        text = "I'm a game"
-                    )
+                composable(
+                    route = NavigationRoutes.GameScreen.route,
+                    arguments = NavigationRoutes.GameScreen.createArgumentsList(),
+                ) { backStackEntry ->
+                    backStackEntry.arguments?.getGameId()?.let { id ->
+                        /*LaunchedEffect(Unit) {
+                            gameOptionsViewModel.setGameType(type)
+                        }*/
+
+                        Scaffold(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
+                            Text(
+                                text = "$id"
+                            )
+                        }
+                    } ?: navController.popBackStack()
                 }
             }
         }

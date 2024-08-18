@@ -15,7 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.spoelt.luckydice.domain.GameType
+import com.spoelt.luckydice.domain.model.GameType
 import com.spoelt.luckydice.presentation.home.components.CardWithCutOutImage
 import com.spoelt.luckydice.presentation.home.components.GameOptions
 import com.spoelt.luckydice.presentation.home.components.Header

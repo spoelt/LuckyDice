@@ -2,8 +2,9 @@ package com.spoelt.luckydice.presentation.selectgameoptions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.spoelt.luckydice.domain.DicePokerGameOptions
-import com.spoelt.luckydice.domain.GameType
+import com.spoelt.luckydice.domain.model.DicePokerGameCreation
+import com.spoelt.luckydice.domain.model.GameType
+import com.spoelt.luckydice.domain.repository.GameRepository
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,9 +13,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SelectGameOptionsViewModel : ViewModel() {
+class SelectGameOptionsViewModel(
+    private val gameRepository: GameRepository,
+) : ViewModel() {
 
-    private val _gameOptions = MutableStateFlow(DicePokerGameOptions())
+    private val _gameOptions = MutableStateFlow(DicePokerGameCreation())
     val gameOptions = _gameOptions.asStateFlow()
 
     private val _gameType = MutableStateFlow<GameType?>(null)
@@ -57,7 +60,11 @@ class SelectGameOptionsViewModel : ViewModel() {
 
     fun updatePlayerName(index: Int, name: String) {
         _gameOptions.update { options ->
-            val updatedPlayers = options.players?.toMutableMap()?.apply { put(index, name) }
+            val updatedPlayers = options.players
+                ?.toMutableMap()
+                ?.apply {
+                    put(index, name)
+                }
             options.copy(players = updatedPlayers)
         }
     }
@@ -69,11 +76,9 @@ class SelectGameOptionsViewModel : ViewModel() {
     }
 
     fun createGame() {
-        // create game in background
-        // if creation was success -> navigate
-
         viewModelScope.launch {
-            _navigate.emit(NavigationRoutes.GameScreen.route)
+            val gameId = gameRepository.createDicePokerGame(_gameOptions.value)
+            _navigate.emit(NavigationRoutes.GameScreen.createRoute(gameId))
         }
     }
 }

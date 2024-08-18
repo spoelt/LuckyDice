@@ -15,8 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.spoelt.luckydice.domain.GameType
-import com.spoelt.luckydice.domain.isDicePoker
+import com.spoelt.luckydice.domain.model.GameType
+import com.spoelt.luckydice.domain.model.isDicePoker
 import com.spoelt.luckydice.presentation.selectgameoptions.components.GameOptionsScaffold
 import luckydice.composeapp.generated.resources.Res
 import luckydice.composeapp.generated.resources.enter_player_names

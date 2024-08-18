@@ -1,7 +1,7 @@
 package com.spoelt.luckydice.presentation.home
 
 import androidx.lifecycle.ViewModel
-import com.spoelt.luckydice.domain.GameType
+import com.spoelt.luckydice.domain.model.GameType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
