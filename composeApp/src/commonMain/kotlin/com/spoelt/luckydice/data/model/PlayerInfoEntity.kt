@@ -27,13 +27,4 @@ data class PlayerInfoEntity(
 
     @ColumnInfo(name = "name")
     val name: String,
-
-    @ColumnInfo(name = "points")
-    val points: Int = 0
-)
-
-fun PlayerInfoEntity.toPlayerInfo() = PlayerInfo(
-    id = this.playerId,
-    name = this.name,
-    points = this.points
 )

@@ -5,10 +5,15 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.spoelt.luckydice.data.local.dao.LuckyDiceDao
 import com.spoelt.luckydice.data.model.DicePokerGameEntity
+import com.spoelt.luckydice.data.model.PlayerColumnEntity
 import com.spoelt.luckydice.data.model.PlayerInfoEntity
 
 @Database(
-    entities = [DicePokerGameEntity::class, PlayerInfoEntity::class],
+    entities = [
+        DicePokerGameEntity::class,
+        PlayerInfoEntity::class,
+        PlayerColumnEntity::class
+    ],
     version = 1
 )
 @ConstructedBy(LuckyDiceDatabaseConstructor::class)
