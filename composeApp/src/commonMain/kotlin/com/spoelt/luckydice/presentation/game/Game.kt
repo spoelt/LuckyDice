@@ -4,11 +4,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +25,9 @@ import com.spoelt.luckydice.domain.model.PlayerInfo
 import com.spoelt.luckydice.presentation.game.components.PointsLegend
 import com.spoelt.luckydice.presentation.game.components.SelectedPlayer
 import com.spoelt.luckydice.presentation.game.components.UnselectedPlayer
+import luckydice.composeapp.generated.resources.Res
+import luckydice.composeapp.generated.resources.end_game
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Composable function that renders the game screen, displaying players and their respective points
@@ -38,6 +46,7 @@ import com.spoelt.luckydice.presentation.game.components.UnselectedPlayer
  * - columnId: The ID of the column being updated.
  * - rowIndex: The index of the row within the column that is being updated.
  * - value: The new value to be set for the specified row.
+ * @param onStopGameClick Callback function to be invoked when a user ends the current game.
  */
 @Composable
 fun Game(
@@ -45,7 +54,8 @@ fun Game(
     playerInfos: List<PlayerInfo>,
     selectedPlayerId: Long?,
     onSelectedPlayerClick: (Long) -> Unit,
-    onPointsChange: (Long, Long, Pair<Int, String>) -> Unit
+    onPointsChange: (Long, Long, Pair<Int, String>) -> Unit,
+    onStopGameClick: () -> Unit
 ) {
     val columnWidths = remember(playerInfos, selectedPlayerId) {
         playerInfos.associate { player ->
@@ -70,12 +80,13 @@ fun Game(
             modifier = Modifier
                 .fillMaxWidth()
                 .imePadding()
+                .navigationBarsPadding()
         ) {
             item {
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .systemBarsPadding(),
+                        .statusBarsPadding(),
                     contentPadding = PaddingValues(12.dp)
                 ) {
                     item {
@@ -118,6 +129,21 @@ fun Game(
                             }
                         }
                     }
+                }
+            }
+
+            item {
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .padding(vertical = 8.dp),
+                    onClick = onStopGameClick
+                ) {
+                    Text(
+                        text = stringResource(Res.string.end_game),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
             }
         }

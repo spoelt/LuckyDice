@@ -163,7 +163,11 @@ fun App(
                                 playerInfos = g.players,
                                 selectedPlayerId = selectedPlayerId,
                                 onSelectedPlayerClick = viewModel::updateSelectedPlayer,
-                                onPointsChange = viewModel::updatePoints
+                                onPointsChange = viewModel::updatePoints,
+                                onStopGameClick = {
+                                    navController.popBackStack()
+                                    gameOptionsViewModel.reset()
+                                }
                             )
                         }
                     } ?: navController.popBackStack()
