@@ -49,39 +49,66 @@ class GameViewModel(
         columnId: Long,
         rowValuePair: Pair<Int, String>
     ) {
-        val indexToUpdate = rowValuePair.first
-        val updatedValue = if (rowValuePair.second == "") {
+        val (indexToUpdate, inputValue) = rowValuePair
+        val updatedValue = if (inputValue == "") {
             DEFAULT_VALUE
         } else {
-            rowValuePair.second.toIntOrNull() ?: return
+            inputValue.toIntOrNull() ?: return
         }
         val currentGame = _game.value ?: return
 
         _game.update {
             val updatedPlayers = currentGame.players.map { player ->
                 if (player.id == playerId) {
-                    val updatedColumns = player.columns.map { column ->
-                        if (column.columnId == columnId) {
-                            val updatedPoints = column.points.toMutableMap().apply {
-                                val isError = arePointsInvalid(updatedValue, indexToUpdate)
-                                handleSnackbar(isError)
-
-                                this[indexToUpdate] = PlayerPoints(
-                                    pointsValue = updatedValue,
-                                    error = isError
-                                )
-                            }
-                            column.copy(points = updatedPoints)
-                        } else {
-                            column
-                        }
-                    }
+                    val updatedColumns = updatePlayerColumns(
+                        columns = player.columns,
+                        columnId = columnId,
+                        updatedValue = updatedValue,
+                        indexToUpdate = indexToUpdate
+                    )
                     player.copy(columns = updatedColumns)
                 } else {
                     player
                 }
             }
             currentGame.copy(players = updatedPlayers)
+        }
+    }
+
+    private fun updatePlayerColumns(
+        columns: List<PlayerColumn>,
+        columnId: Long,
+        updatedValue: Int,
+        indexToUpdate: Int
+    ): List<PlayerColumn> {
+        return columns.map { column ->
+            if (column.columnId == columnId) {
+                val updatedPoints = updatePlayerPoints(
+                    points = column.points,
+                    updatedValue = updatedValue,
+                    indexToUpdate = indexToUpdate
+                )
+                column.copy(points = updatedPoints)
+            } else {
+                column
+            }
+        }
+    }
+
+    private fun updatePlayerPoints(
+        points: Map<Int, PlayerPoints>,
+        updatedValue: Int,
+        indexToUpdate: Int
+    ): Map<Int, PlayerPoints> {
+        return points.toMutableMap().apply {
+            val isError = arePointsInvalid(updatedValue, indexToUpdate)
+            // could this be called somewhere else?
+            handleSnackbar(isError)
+
+            this[indexToUpdate] = PlayerPoints(
+                pointsValue = updatedValue,
+                error = isError
+            )
         }
     }
 
