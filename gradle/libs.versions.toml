@@ -9,6 +9,7 @@ androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.0"
 androidx-test-junit = "1.2.1"
 compose-plugin = "1.6.11"
+compottie = "2.0.0-beta02"
 junit = "4.13.2"
 kotlin = "2.0.10"
 material3 = "1.2.1"
@@ -21,6 +22,7 @@ sqlite = "2.5.0-alpha06"
 
 [libraries]
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

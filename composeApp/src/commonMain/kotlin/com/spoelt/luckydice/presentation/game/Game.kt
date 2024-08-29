@@ -10,8 +10,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -48,7 +49,7 @@ import org.jetbrains.compose.resources.stringResource
  * - columnId: The ID of the column being updated.
  * - rowIndex: The index of the row within the column that is being updated.
  * - value: The new value to be set for the specified row.
- * @param onStopGameClick Callback function to be invoked when a user ends the current game.
+ * @param onEndGameClick Callback function to be invoked when a user ends the current game.
  */
 @Composable
 fun Game(
@@ -57,8 +58,8 @@ fun Game(
     selectedPlayerId: Long?,
     onSelectedPlayerClick: (Long) -> Unit,
     onPointsChange: (Long, Long, Pair<Int, String>) -> Unit,
-    onStopGameClick: () -> Unit,
-    snackbarHostState: SnackbarHostState
+    onEndGameClick: () -> Unit,
+    snackbarHostState: SnackbarHostState,
 ) {
     val columnWidths = remember(playerInfos, selectedPlayerId) {
         playerInfos.associate { player ->
@@ -74,7 +75,6 @@ fun Game(
             player.id to totalWidth
         }
     }
-
     var topPointsColumnHeight by remember { mutableStateOf(0) }
     var bottomPointsColumnHeight by remember { mutableStateOf(0) }
 
@@ -140,19 +140,29 @@ fun Game(
             }
 
             item {
-                OutlinedButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                        .padding(vertical = 8.dp),
-                    onClick = onStopGameClick
-                ) {
-                    Text(
-                        text = stringResource(Res.string.end_game),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+                EndGameButton(onEndGameClick)
             }
         }
     }
 }
+
+@Composable
+private fun EndGameButton(onStopGameClick: () -> Unit) {
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+            .padding(vertical = 8.dp),
+        onClick = onStopGameClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Text(
+            text = stringResource(Res.string.end_game),
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+

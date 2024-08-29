@@ -10,6 +10,7 @@ private const val SELECT_NUMBER_OF_PLAYERS_BASE_ROUTE = "select_number_of_player
 private const val ENTER_PLAYER_NAMES_ROUTE = "enter_player_names"
 private const val SELECT_NUMBER_OF_COLUMNS_ROUTE = "select_number_of_columns"
 private const val GAME_SCREEN_BASE_ROUTE = "game_screen"
+private const val RESULTS_SCREEN_BASE_ROUTE = "results_screen"
 
 sealed class NavigationRoutes(val route: String) {
     data object Home : NavigationRoutes(HOME_ROUTE)
@@ -50,10 +51,28 @@ sealed class NavigationRoutes(val route: String) {
             return "$GAME_SCREEN_BASE_ROUTE/$gameId"
         }
 
-        fun Bundle?.getGameId(): Long? {
-            if (this == null) return null
+        fun getGameId(bundle: Bundle?): Long? {
+            if (bundle == null) return null
 
-            return this.getLong(ARGUMENT_GAME_ID)
+            return bundle.getLong(ARGUMENT_GAME_ID)
+        }
+    }
+
+    data object ResultsScreen : NavigationRoutes("$RESULTS_SCREEN_BASE_ROUTE/{gameId}") {
+        private const val ARGUMENT_GAME_ID = "gameId"
+
+        fun createArgumentsList() = listOf(
+            navArgument(ARGUMENT_GAME_ID) { type = NavType.LongType }
+        )
+
+        fun createRoute(gameId: Long): String {
+            return "$RESULTS_SCREEN_BASE_ROUTE/$gameId"
+        }
+
+        fun getGameIdForResults(bundle: Bundle?): Long? {
+            if (bundle == null) return null
+
+            return bundle.getLong(ARGUMENT_GAME_ID)
         }
     }
 }

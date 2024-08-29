@@ -13,9 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            App(
-                darkTheme = isSystemInDarkTheme()
-            )
+            App(darkTheme = isSystemInDarkTheme())
         }
     }
 }

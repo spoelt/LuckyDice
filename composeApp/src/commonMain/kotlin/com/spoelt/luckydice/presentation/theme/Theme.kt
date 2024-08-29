@@ -235,6 +235,5 @@ val highContrastDarkColorScheme = darkColorScheme(
 @Composable
 expect fun LuckyDiceTheme(
     darkTheme: Boolean,
-    dynamicColor: Boolean,
     content: @Composable () -> Unit
 )

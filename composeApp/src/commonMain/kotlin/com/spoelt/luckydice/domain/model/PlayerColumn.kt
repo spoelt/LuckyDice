@@ -7,13 +7,11 @@ package com.spoelt.luckydice.domain.model
  * @property columnNumber The number of the column in which the points are recorded.
  *                        Column numbers typically start from 1 and go up to 3.
  * @property points The map of the points the player has earned in this specific column.
- * @property errors A map of input errors consisting of the field key and the faulty value.
  */
 data class PlayerColumn(
     val columnId: Long,
     val columnNumber: Int,
     val points: Map<Int, PlayerPoints>,
-    val errors: Map<Int, Int> = emptyMap()
 ) {
     companion object {
         const val ONE = 1

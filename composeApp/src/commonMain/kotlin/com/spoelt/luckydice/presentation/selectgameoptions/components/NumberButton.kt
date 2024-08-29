@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.spoelt.luckydice.presentation.theme.mediumBlue
 import com.spoelt.luckydice.presentation.theme.primaryGradient
 
 @Composable
@@ -33,7 +34,7 @@ fun NumberButton(
         onClick = { onClick(number) },
         border = BorderStroke(
             width = if (isSelected) 4.dp else 0.dp,
-            color = MaterialTheme.colorScheme.primary
+            color = mediumBlue
         )
     ) {
         Text(

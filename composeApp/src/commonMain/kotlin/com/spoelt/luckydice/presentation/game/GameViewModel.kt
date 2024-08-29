@@ -132,7 +132,7 @@ class GameViewModel(
 
     private fun arePointsInvalid(value: Int, indexToUpdate: Int): Boolean {
         // if the field is empty, we'll count it as a valid input
-        return if (value == DEFAULT_VALUE) {
+        return if (value == DEFAULT_VALUE || value == 0) {
             false
         } else if (indexToUpdate <= PlayerColumn.SIX) {
             // value must be a multiple of the row and smaller or equal to the max value you can

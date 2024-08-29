@@ -20,4 +20,9 @@
     <string name="grande_abbreviation">GR</string>
     <string name="end_game">End game</string>
     <string name="invalid_input">Invalid input</string>
+    <string name="player_points">%1$d points</string>
+    <string name="first_place_content_desc">First place trophy</string>
+    <string name="second_place_content_desc">Second place trophy</string>
+    <string name="third_place_content_desc">Third place trophy</string>
+    <string name="go_home_action">Back to home</string>
 </resources>

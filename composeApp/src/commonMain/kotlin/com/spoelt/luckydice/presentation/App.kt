@@ -19,7 +19,9 @@ import com.spoelt.luckydice.presentation.home.HomeScreen
 import com.spoelt.luckydice.presentation.home.HomeViewModel
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes.GameScreen.getGameId
+import com.spoelt.luckydice.presentation.navigation.NavigationRoutes.ResultsScreen.getGameIdForResults
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes.SelectNumberOfPlayers.getGameType
+import com.spoelt.luckydice.presentation.results.Results
 import com.spoelt.luckydice.presentation.selectgameoptions.SelectGameOptionsViewModel
 import com.spoelt.luckydice.presentation.selectgameoptions.enterplayernames.EnterPlayerNames
 import com.spoelt.luckydice.presentation.selectgameoptions.selectnumberofcolumns.SelectNumberOfColumns
@@ -34,10 +36,7 @@ import org.koin.core.annotation.KoinExperimentalAPI
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun App(
-    darkTheme: Boolean,
-    dynamicColor: Boolean = false,
-) {
+fun App(darkTheme: Boolean) {
     val navController = rememberNavController()
     val gameOptionsViewModel = koinViewModel<SelectGameOptionsViewModel>()
 
@@ -54,10 +53,7 @@ fun App(
         }
     }
 
-    LuckyDiceTheme(
-        darkTheme = darkTheme,
-        dynamicColor = dynamicColor
-    ) {
+    LuckyDiceTheme(darkTheme = darkTheme) {
         KoinContext {
             NavHost(
                 navController = navController,
@@ -153,7 +149,7 @@ fun App(
                     route = NavigationRoutes.GameScreen.route,
                     arguments = NavigationRoutes.GameScreen.createArgumentsList(),
                 ) { backStackEntry ->
-                    backStackEntry.arguments?.getGameId()?.let { id ->
+                    getGameId(backStackEntry.arguments)?.let { id ->
                         val viewModel = koinViewModel<GameViewModel>()
                         val game by viewModel.game.collectAsStateWithLifecycle()
                         val selectedPlayerId by viewModel.selectedPlayerId.collectAsStateWithLifecycle()
@@ -179,13 +175,30 @@ fun App(
                                 selectedPlayerId = selectedPlayerId,
                                 onSelectedPlayerClick = viewModel::updateSelectedPlayer,
                                 onPointsChange = viewModel::updatePoints,
-                                onStopGameClick = {
-                                    navController.popBackStack()
-                                    gameOptionsViewModel.reset()
+                                onEndGameClick = {
+                                    val route = NavigationRoutes.ResultsScreen.createRoute(id)
+                                    navController.navigateAndPopBackstack(
+                                        destination = route,
+                                        popUpToRoute = NavigationRoutes.Home.route,
+                                        isInclusive = false
+                                    )
                                 },
-                                snackbarHostState = snackbarHostState
+                                snackbarHostState = snackbarHostState,
                             )
                         }
+                    } ?: navController.popBackStack()
+                }
+
+                composable(
+                    route = NavigationRoutes.ResultsScreen.route,
+                    arguments = NavigationRoutes.ResultsScreen.createArgumentsList(),
+                ) { backStackEntry ->
+                    getGameIdForResults(backStackEntry.arguments)?.let { id ->
+                        Results(
+                            modifier = Modifier.fillMaxSize(),
+                            gameId = id,
+                            onGoHomeClick = navController::popBackStack
+                        )
                     } ?: navController.popBackStack()
                 }
             }

@@ -23,7 +23,8 @@ fun LuckyDiceIconButton(
         modifier = buttonModifier,
         onClick = onClick,
         colors = IconButtonDefaults.iconButtonColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Icon(

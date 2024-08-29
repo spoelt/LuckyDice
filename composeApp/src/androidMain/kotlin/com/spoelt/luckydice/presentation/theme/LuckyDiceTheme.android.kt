@@ -11,7 +11,6 @@ import androidx.core.view.WindowCompat
 @Composable
 actual fun LuckyDiceTheme(
     darkTheme: Boolean,
-    dynamicColor: Boolean,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {

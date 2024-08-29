@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 val lightBlue = Color(0xFFB1D8FF)
 val lightPink = Color(0xFFFFC1E3)
 val lightGray = Color(0x801b1b1b)
+val mediumBlue = Color(0xFF5a7a9a)
 
 val primaryGradient = Brush.linearGradient(
     colors = listOf(lightBlue, lightPink)
@@ -119,7 +120,7 @@ val surfaceContainerLightHighContrast = Color(0xFFEEEDF1)
 val surfaceContainerHighLightHighContrast = Color(0xFFE8E8EB)
 val surfaceContainerHighestLightHighContrast = Color(0xFFE2E2E5)
 
-val primaryDark = Color(0xFFF8FAFF)
+val primaryDark = lightBlue
 val onPrimaryDark = Color(0xFF003352)
 val primaryContainerDark = Color(0xFFADD3FA)
 val onPrimaryContainerDark = Color(0xFF133F5F)
