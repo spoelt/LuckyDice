@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,7 +57,8 @@ fun Game(
     selectedPlayerId: Long?,
     onSelectedPlayerClick: (Long) -> Unit,
     onPointsChange: (Long, Long, Pair<Int, String>) -> Unit,
-    onStopGameClick: () -> Unit
+    onStopGameClick: () -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     val columnWidths = remember(playerInfos, selectedPlayerId) {
         playerInfos.associate { player ->
@@ -75,11 +78,15 @@ fun Game(
     var topPointsColumnHeight by remember { mutableStateOf(0) }
     var bottomPointsColumnHeight by remember { mutableStateOf(0) }
 
-    Scaffold(modifier = modifier.fillMaxWidth()) {
+    Scaffold(
+        modifier = modifier
+            .fillMaxWidth()
+            .imePadding(),
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .imePadding()
                 .navigationBarsPadding()
         ) {
             item {

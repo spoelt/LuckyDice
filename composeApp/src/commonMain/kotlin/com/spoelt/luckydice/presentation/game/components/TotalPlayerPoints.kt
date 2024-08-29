@@ -5,11 +5,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.spoelt.luckydice.domain.model.PlayerPoints
 
 @Composable
 fun TotalPlayerPoints(
     modifier: Modifier = Modifier,
-    totalPoints: List<Map<Int, Int>>,
+    totalPoints: List<Map<Int, PlayerPoints>>,
     onPointsChange: (Int, Pair<Int, String>) -> Unit,
     isSelected: Boolean
 ) {

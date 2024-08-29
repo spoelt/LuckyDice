@@ -2,9 +2,6 @@ package com.spoelt.luckydice.data.model
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.spoelt.luckydice.domain.model.DicePokerGame
-import com.spoelt.luckydice.domain.model.PlayerColumn
-import com.spoelt.luckydice.domain.model.PlayerInfo
 
 data class GameWithPlayersAndColumns(
     @Embedded val game: DicePokerGameCreationEntity,
@@ -35,23 +32,3 @@ data class PlayerColumnWithPoints(
     )
     val points: List<PlayerPointsEntity>
 )
-
-fun GameWithPlayersAndColumns.toDicePokerGame(): DicePokerGame {
-    return DicePokerGame(
-        numberOfPlayers = game.numberOfPlayers,
-        numberOfColumns = game.numberOfColumns,
-        players = playersWithColumns.map { playerWithColumns ->
-            PlayerInfo(
-                id = playerWithColumns.player.playerId,
-                name = playerWithColumns.player.name,
-                columns = playerWithColumns.columns.map { columnWithPoints ->
-                    PlayerColumn(
-                        columnId = columnWithPoints.playerColumn.columnId,
-                        columnNumber = columnWithPoints.playerColumn.columnNumber,
-                        points = columnWithPoints.points.associate { it.rowIndex to it.points },
-                    )
-                }
-            )
-        }
-    )
-}

@@ -9,11 +9,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.spoelt.luckydice.domain.model.PlayerPoints
 
 @Composable
 fun SumRow(
     modifier: Modifier = Modifier,
-    totalPoints: List<Map<Int, Int>>
+    totalPoints: List<Map<Int, PlayerPoints>>
 ) {
     Row(
         modifier = modifier,
@@ -31,10 +32,10 @@ fun SumRow(
 @Composable
 fun Sum(
     modifier: Modifier = Modifier,
-    points: Map<Int, Int>
+    points: Map<Int, PlayerPoints>
 ) {
     val sum = remember(points) {
-        points.values.filter { it != -1 }.sum()
+        points.values.filter { it.pointsValue != -1 && !it.error }.sumOf { it.pointsValue }
     }
     val displaySum = remember(sum) {
         "$sum"

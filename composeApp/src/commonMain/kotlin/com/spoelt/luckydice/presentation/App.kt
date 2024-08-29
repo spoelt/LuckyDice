@@ -1,9 +1,11 @@
 package com.spoelt.luckydice.presentation
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -23,6 +25,9 @@ import com.spoelt.luckydice.presentation.selectgameoptions.enterplayernames.Ente
 import com.spoelt.luckydice.presentation.selectgameoptions.selectnumberofcolumns.SelectNumberOfColumns
 import com.spoelt.luckydice.presentation.selectgameoptions.selectnumberofplayers.SelectNumberOfPlayers
 import com.spoelt.luckydice.presentation.theme.LuckyDiceTheme
+import luckydice.composeapp.generated.resources.Res
+import luckydice.composeapp.generated.resources.invalid_input
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.KoinContext
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -152,9 +157,19 @@ fun App(
                         val viewModel = koinViewModel<GameViewModel>()
                         val game by viewModel.game.collectAsStateWithLifecycle()
                         val selectedPlayerId by viewModel.selectedPlayerId.collectAsStateWithLifecycle()
+                        val snackbarHostState = remember { SnackbarHostState() }
+                        val errorMessage = stringResource(Res.string.invalid_input)
 
                         LaunchedEffect(Unit) {
                             viewModel.getGame(id)
+                        }
+
+                        LaunchedEffect(Unit) {
+                            viewModel.snackbar.collect {
+                                snackbarHostState.showSnackbar(
+                                    message = errorMessage
+                                )
+                            }
                         }
 
                         game?.let { g ->
@@ -167,7 +182,8 @@ fun App(
                                 onStopGameClick = {
                                     navController.popBackStack()
                                     gameOptionsViewModel.reset()
-                                }
+                                },
+                                snackbarHostState = snackbarHostState
                             )
                         }
                     } ?: navController.popBackStack()

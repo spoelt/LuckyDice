@@ -3,7 +3,6 @@ package com.spoelt.luckydice.presentation.game.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,15 +24,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.spoelt.luckydice.domain.model.PlayerColumn
+import com.spoelt.luckydice.domain.model.PlayerPoints
 
-const val MAX_CHARS_NUMBERED_DICE_INPUT = 2
-const val MAX_CHARS_TEXT_DICE_INPUT = 3
+const val MAX_TWO_DIGIT_INPUT = 2
+const val MAX_THREE_DIGIT_INPUT = 3
 
 @Composable
 fun PlayerPointsColumn(
     modifier: Modifier = Modifier,
     elementHeight: Dp = TextFieldDefaults.MinHeight,
-    points: Map<Int, Int>,
+    points: Map<Int, PlayerPoints>,
     onPointsChange: (Pair<Int, String>) -> Unit,
     isSelected: Boolean,
 ) {
@@ -45,7 +45,7 @@ fun PlayerPointsColumn(
         sortedPoints.entries.lastOrNull()?.key
     }
     val verticalArrangement = remember(isSelected) {
-        if (isSelected) Arrangement.spacedBy(4.dp) else Arrangement.Top
+        if (isSelected) Arrangement.spacedBy(4.dp) else Arrangement.Center
     }
 
     Column(
@@ -53,28 +53,29 @@ fun PlayerPointsColumn(
         verticalArrangement = verticalArrangement
     ) {
         if (isSelected) {
-            sortedPoints.forEach { points ->
+            sortedPoints.forEach { (key, playerPoints) ->
                 PointsInputField(
                     modifier = Modifier.fillMaxWidth(),
-                    points = points.value,
+                    points = playerPoints.pointsValue,
                     onPointsChange = { value ->
-                        onPointsChange(points.key to value)
+                        onPointsChange(key to value)
                     },
-                    maxChars = if (points.key <= PlayerColumn.POKER) {
-                        MAX_CHARS_NUMBERED_DICE_INPUT
+                    maxChars = if (key <= PlayerColumn.POKER) {
+                        MAX_TWO_DIGIT_INPUT
                     } else {
-                        MAX_CHARS_TEXT_DICE_INPUT
-                    }
+                        MAX_THREE_DIGIT_INPUT
+                    },
+                    isError = playerPoints.error
                 )
             }
         } else {
-            sortedPoints.forEach { points ->
+            sortedPoints.forEach { (key, playerPoints) ->
                 PointsDisplayField(
                     modifier = Modifier
-                        .padding(bottom = if (lastKey == points.key) 0.dp else 4.dp)
+                        .padding(bottom = if (lastKey == key) 0.dp else 6.dp)
                         .height(elementHeight)
                         .fillMaxWidth(),
-                    points = points.value
+                    points = playerPoints.pointsValue
                 )
             }
         }
@@ -85,6 +86,7 @@ fun PlayerPointsColumn(
 private fun PointsInputField(
     modifier: Modifier = Modifier,
     points: Int,
+    isError: Boolean,
     onPointsChange: (String) -> Unit,
     maxChars: Int,
 ) {
@@ -113,7 +115,8 @@ private fun PointsInputField(
             onDone = {
                 focusManager.clearFocus()
             }
-        )
+        ),
+        isError = isError
     )
 }
 
