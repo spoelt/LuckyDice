@@ -60,7 +60,7 @@ fun PlayerPointsColumn(
                     onPointsChange = { value ->
                         onPointsChange(points.key to value)
                     },
-                    maxChars = if (points.key <= PlayerColumn.SIX) {
+                    maxChars = if (points.key <= PlayerColumn.POKER) {
                         MAX_CHARS_NUMBERED_DICE_INPUT
                     } else {
                         MAX_CHARS_TEXT_DICE_INPUT
