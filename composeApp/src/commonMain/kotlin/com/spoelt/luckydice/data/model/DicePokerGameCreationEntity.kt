@@ -7,7 +7,7 @@ import com.spoelt.luckydice.domain.model.DicePokerGame
 import com.spoelt.luckydice.domain.model.DicePokerGameCreation
 
 @Entity(tableName = "dice_poker_games")
-data class DicePokerGameEntity(
+data class DicePokerGameCreationEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "game_id")
     val gameId: Long = 0,
@@ -19,15 +19,7 @@ data class DicePokerGameEntity(
     val numberOfColumns: Int
 )
 
-fun DicePokerGame.toDicePokerGameEntity(): DicePokerGameEntity {
-    return DicePokerGameEntity(
-        gameId = this.id,
-        numberOfPlayers = this.numberOfPlayers,
-        numberOfColumns = this.numberOfColumns
-    )
-}
-
-fun DicePokerGameCreation.toDicePokerGameEntity() = DicePokerGameEntity(
+fun DicePokerGameCreation.toDicePokerGameCreationEntity() = DicePokerGameCreationEntity(
     numberOfPlayers = this.numberOfPlayers,
     numberOfColumns = this.numberOfColumns
 )

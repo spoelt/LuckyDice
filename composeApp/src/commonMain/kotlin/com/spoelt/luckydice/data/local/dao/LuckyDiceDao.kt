@@ -5,85 +5,92 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import androidx.room.Upsert
-import com.spoelt.luckydice.data.model.DicePokerGameEntity
+import com.spoelt.luckydice.data.model.DicePokerGameCreationEntity
 import com.spoelt.luckydice.data.model.GameWithPlayersAndColumns
 import com.spoelt.luckydice.data.model.PlayerColumnEntity
 import com.spoelt.luckydice.data.model.PlayerInfoEntity
-import com.spoelt.luckydice.data.model.toDicePokerGameEntity
-import com.spoelt.luckydice.domain.model.DicePokerGame
+import com.spoelt.luckydice.data.model.PlayerPointsEntity
+import com.spoelt.luckydice.data.model.toDicePokerGameCreationEntity
 import com.spoelt.luckydice.domain.model.DicePokerGameCreation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.withContext
 
 @Dao
 interface LuckyDiceDao {
-    @Upsert
-    suspend fun upsertDicePokerGame(game: DicePokerGameEntity): Long
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDicePokerGame(game: DicePokerGameCreationEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDicePokerPlayers(players: List<PlayerInfoEntity>): List<Long>
 
-    @Update
-    suspend fun updateDicePokerPlayers(players: List<PlayerInfoEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDicePokerPlayerColumnInfo(columns: List<PlayerColumnEntity>): List<Long>
 
     @Upsert
-    suspend fun upsertDicePokerPlayerColumnInfo(columns: List<PlayerColumnEntity>)
+    suspend fun upsertPlayerPoints(playerPoints: List<PlayerPointsEntity>)
 
     @Transaction
     @Query("SELECT * FROM dice_poker_games WHERE game_id = :gameId")
-    suspend fun getDicePokerGameWithPlayers(gameId: Long): GameWithPlayersAndColumns
+    suspend fun getDicePokerGameWithPlayers(gameId: Long): GameWithPlayersAndColumns?
 
     @Transaction
-    suspend fun createDicePokerGameWithPlayers(game: DicePokerGameCreation): Long {
-        val gameId = upsertDicePokerGame(game.toDicePokerGameEntity())
+    suspend fun createDicePokerGame(game: DicePokerGameCreation): Long {
+        return withContext(Dispatchers.IO) {
+            val gameId = insertDicePokerGame(game.toDicePokerGameCreationEntity())
 
-        game.players?.let { players ->
-            val newPlayerEntities  = players.map { (_, name) ->
-                PlayerInfoEntity(
-                    gameId = gameId,
-                    name = name,
-                )
-            }
-
-            val playerIds = insertDicePokerPlayers(newPlayerEntities)
-
-            val playerColumns = playerIds.flatMap { playerId ->
-                (1..game.numberOfColumns).map { columnNumber ->
-                    PlayerColumnEntity(
-                        playerId = playerId,
-                        columnNumber = columnNumber,
-                        points = 0 // Initialize points
+            game.players?.let { players ->
+                val playersToInsert = players.map { (_, name) ->
+                    PlayerInfoEntity(
+                        gameId = gameId,
+                        name = name
                     )
                 }
-            }
-            upsertDicePokerPlayerColumnInfo(playerColumns)
-        }
+                val playerIds = insertDicePokerPlayers(playersToInsert)
 
-        return gameId
+                val playerColumnsToInsert = playerIds.flatMap { playerId ->
+                    (1..game.numberOfColumns).map { columnNumber ->
+                        PlayerColumnEntity(
+                            playerId = playerId,
+                            columnNumber = columnNumber
+                        )
+                    }
+                }
+                val columnIds = insertDicePokerPlayerColumnInfo(playerColumnsToInsert)
+
+                val playerColumnPointsToInsert = columnIds.flatMap { columnId ->
+                    generateDefaultPoints().map { (rowIndex, points) ->
+                        PlayerPointsEntity(
+                            columnId = columnId,
+                            rowIndex = rowIndex,
+                            points = points
+                        )
+                    }
+                }
+
+                upsertPlayerPoints(playerColumnPointsToInsert)
+            }
+
+            gameId
+        }
     }
 
-    @Transaction
-    suspend fun updateDicePokerGameWithPlayers(game: DicePokerGame) {
-        val gameId = upsertDicePokerGame(game.toDicePokerGameEntity())
+    // Helper function to generate the default points map
+    private fun generateDefaultPoints(): Map<Int, Int> = mapOf(
+        PlayerPointsEntity.ONE to DEFAULT_POINTS_VALUE,
+        PlayerPointsEntity.TWO to DEFAULT_POINTS_VALUE,
+        PlayerPointsEntity.THREE to DEFAULT_POINTS_VALUE,
+        PlayerPointsEntity.FOUR to DEFAULT_POINTS_VALUE,
+        PlayerPointsEntity.FIVE to DEFAULT_POINTS_VALUE,
+        PlayerPointsEntity.SIX to DEFAULT_POINTS_VALUE,
+        PlayerPointsEntity.STREET to DEFAULT_POINTS_VALUE,
+        PlayerPointsEntity.FULL_HOUSE to DEFAULT_POINTS_VALUE,
+        PlayerPointsEntity.POKER to DEFAULT_POINTS_VALUE,
+        PlayerPointsEntity.GRANDE to DEFAULT_POINTS_VALUE
+    )
 
-        val playerEntities = game.players.map { (_, player) ->
-            PlayerInfoEntity(
-                gameId = gameId,
-                name = player.name,
-                playerId = player.id,
-            )
-        }
-        updateDicePokerPlayers(playerEntities)
-
-        val playerColumns = game.players.flatMap { (_, player) ->
-            player.columns.map { column ->
-                PlayerColumnEntity(
-                    playerId = player.id,
-                    columnNumber = column.columnNumber,
-                    points = column.points
-                )
-            }
-        }
-        upsertDicePokerPlayerColumnInfo(playerColumns)
+    companion object {
+        const val DEFAULT_POINTS_VALUE = -1
     }
 }

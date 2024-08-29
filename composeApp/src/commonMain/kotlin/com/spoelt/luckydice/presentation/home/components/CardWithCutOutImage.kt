@@ -23,22 +23,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.spoelt.luckydice.presentation.theme.lightBlue
-import com.spoelt.luckydice.presentation.theme.lightPink
+import com.spoelt.luckydice.presentation.theme.primaryGradient
 import luckydice.composeapp.generated.resources.Res
 import luckydice.composeapp.generated.resources.dice
 import luckydice.composeapp.generated.resources.home_dice_icon_content_desc
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
-private val linearGradient = Brush.linearGradient(
-    colors = listOf(lightBlue, lightPink)
-)
-
 @Composable
 fun CardWithCutOutImage(
     modifier: Modifier = Modifier,
-    gradientBackground: Brush = linearGradient,
+    gradientBackground: Brush = primaryGradient,
     imageHeight: Dp = 100.dp,
     content: @Composable () -> Unit
 ) {
@@ -73,7 +68,7 @@ fun CardWithCutOutImage(
             }
         }
 
-        DiceImage(linearGradient)
+        DiceImage(primaryGradient)
     }
 }
 

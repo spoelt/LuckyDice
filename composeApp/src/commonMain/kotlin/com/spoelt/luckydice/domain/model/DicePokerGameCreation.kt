@@ -5,8 +5,8 @@ package com.spoelt.luckydice.domain.model
  *
  * @property numberOfPlayers The number of players. Defaults to 2.
  * @property players A map of players participating in the game.
- *                   The key is the player's unique identifier (an integer), and the value is the
- *                   name of the player.
+ *                   The key is the player's temporary unique identifier (an integer), and the value
+ *                   is the name of the player.
  * @property numberOfColumns The number of columns the game should have. Defaults to 2.
  */
 data class DicePokerGameCreation(

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spoelt.luckydice.domain.model.DicePokerGameCreation
 import com.spoelt.luckydice.domain.model.GameType
+import com.spoelt.luckydice.domain.model.LuckyDiceNavigationTarget
 import com.spoelt.luckydice.domain.repository.GameRepository
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,8 +24,8 @@ class SelectGameOptionsViewModel(
     private val _gameType = MutableStateFlow<GameType?>(null)
     val gameType = _gameType.asStateFlow()
 
-    private val _navigate = MutableSharedFlow<String>()
-    val navigate = _navigate.asSharedFlow()
+    private val _navigateEvent = MutableSharedFlow<LuckyDiceNavigationTarget>()
+    val navigateEvent = _navigateEvent.asSharedFlow()
 
     // TODO: adapt later when more games available
     /*fun initViewModel(type: GameType) {
@@ -78,7 +79,16 @@ class SelectGameOptionsViewModel(
     fun createGame() {
         viewModelScope.launch {
             val gameId = gameRepository.createDicePokerGame(_gameOptions.value)
-            _navigate.emit(NavigationRoutes.GameScreen.createRoute(gameId))
+            val navigationTarget = LuckyDiceNavigationTarget(
+                route = NavigationRoutes.GameScreen.createRoute(gameId),
+                popUpToRoute = NavigationRoutes.Home.route,
+            )
+            _navigateEvent.emit(navigationTarget)
         }
+    }
+
+    fun reset() {
+        _gameOptions.update { DicePokerGameCreation() }
+        _gameType.update { null }
     }
 }

@@ -6,13 +6,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.spoelt.luckydice.domain.model.GameType
@@ -45,6 +52,12 @@ fun EnterPlayerNames(
             Res.string.start_game
         }
     }
+    val focusRequesters = remember { List(players?.size ?: 1) { FocusRequester() } }
+    val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(Unit) {
+        focusRequesters.firstOrNull()?.requestFocus()
+    }
 
     GameOptionsScaffold(
         modifier = modifier,
@@ -59,9 +72,10 @@ fun EnterPlayerNames(
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                players?.keys?.forEach { key ->
+                players?.keys?.forEachIndexed { index, key ->
                     OutlinedTextField(
-                        modifier = Modifier.fillMaxWidth(0.8f),
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                            .focusRequester(focusRequesters[index]),
                         value = players[key].orEmpty(),
                         onValueChange = { name ->
                             onUpdatePlayerName(key, name)
@@ -72,7 +86,26 @@ fun EnterPlayerNames(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         },
-                        singleLine = true
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = if (index < players.size - 1) {
+                                ImeAction.Next
+                            } else {
+                                ImeAction.Done
+                            }
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onNext = {
+                                if (index < players.size - 1) {
+                                    focusRequesters[index + 1].requestFocus()
+                                } else {
+                                    focusManager.clearFocus()
+                                }
+                            },
+                            onDone = {
+                                focusManager.clearFocus()
+                            }
+                        ),
                     )
                 }
             }
@@ -86,6 +119,7 @@ fun EnterPlayerNames(
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 8.dp),
                 onClick = {
+                    focusManager.clearFocus()
                     onNextClick()
                 },
                 enabled = isBottomBarButtonEnabled

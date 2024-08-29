@@ -12,6 +12,6 @@ package com.spoelt.luckydice.domain.model
 data class DicePokerGame(
     val id: Long = 0,
     val numberOfPlayers: Int,
-    val players: Map<Long, PlayerInfo>,
+    val players: List<PlayerInfo>,
     val numberOfColumns: Int
 )

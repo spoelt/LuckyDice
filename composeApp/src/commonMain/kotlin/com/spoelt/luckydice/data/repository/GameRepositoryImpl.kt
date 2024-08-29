@@ -8,13 +8,9 @@ import com.spoelt.luckydice.domain.repository.GameRepository
 
 class GameRepositoryImpl(private val database: LuckyDiceDatabase) : GameRepository {
     override suspend fun createDicePokerGame(game: DicePokerGameCreation): Long =
-        database.getDicePokerGameDao().createDicePokerGameWithPlayers(game)
+        database.getDicePokerGameDao().createDicePokerGame(game)
 
-    override suspend fun updateDicePokerGame(game: DicePokerGame) {
-        database.getDicePokerGameDao().updateDicePokerGameWithPlayers(game)
-    }
-
-    override suspend fun getDicePokerGame(gameId: Long): DicePokerGame =
-        database.getDicePokerGameDao().getDicePokerGameWithPlayers(gameId).toDicePokerGame()
+    override suspend fun getDicePokerGame(gameId: Long): DicePokerGame? =
+        database.getDicePokerGameDao().getDicePokerGameWithPlayers(gameId)?.toDicePokerGame()
 
 }

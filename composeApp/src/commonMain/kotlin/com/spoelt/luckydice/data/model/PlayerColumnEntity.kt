@@ -3,8 +3,8 @@ package com.spoelt.luckydice.data.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.spoelt.luckydice.domain.model.PlayerColumn
 
 @Entity(
     tableName = "player_columns",
@@ -15,7 +15,8 @@ import com.spoelt.luckydice.domain.model.PlayerColumn
             childColumns = ["player_id"],
             onDelete = ForeignKey.CASCADE
         )
-    ]
+    ],
+    indices = [Index("player_id")]
 )
 data class PlayerColumnEntity(
     @PrimaryKey(autoGenerate = true)
@@ -27,16 +28,4 @@ data class PlayerColumnEntity(
 
     @ColumnInfo(name = "column_number")
     val columnNumber: Int,
-
-    @ColumnInfo(name = "points")
-    val points: Int = 0
 )
-
-fun PlayerColumnEntity.toPlayerColumn() = PlayerColumn(
-    columnId = this.columnId,
-    playerId = this.playerId,
-    columnNumber = this.columnNumber,
-    points = this.points
-)
-
-fun List<PlayerColumnEntity>.toPlayerColumnList() = map { it.toPlayerColumn() }

@@ -6,7 +6,5 @@ import com.spoelt.luckydice.domain.model.DicePokerGameCreation
 interface GameRepository {
     suspend fun createDicePokerGame(game: DicePokerGameCreation): Long
 
-    suspend fun updateDicePokerGame(game: DicePokerGame)
-
-    suspend fun getDicePokerGame(gameId: Long): DicePokerGame
+    suspend fun getDicePokerGame(gameId: Long): DicePokerGame?
 }

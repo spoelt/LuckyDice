@@ -1,18 +1,18 @@
 package com.spoelt.luckydice.presentation
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.spoelt.luckydice.domain.model.isDicePoker
+import androidx.navigation.navOptions
+import com.spoelt.luckydice.presentation.game.Game
+import com.spoelt.luckydice.presentation.game.GameViewModel
 import com.spoelt.luckydice.presentation.home.HomeScreen
 import com.spoelt.luckydice.presentation.home.HomeViewModel
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes
@@ -37,8 +37,15 @@ fun App(
     val gameOptionsViewModel = koinViewModel<SelectGameOptionsViewModel>()
 
     LaunchedEffect(Unit) {
-        gameOptionsViewModel.navigate.collect { route ->
-            navController.navigate(route)
+        gameOptionsViewModel.navigateEvent.collect { target ->
+            target.popUpToRoute?.let { popUpToRoute ->
+                navController.navigateAndPopBackstack(
+                    destination = target.route,
+                    popUpToRoute = popUpToRoute,
+                    isInclusive = target.inclusive
+                )
+                gameOptionsViewModel.reset()
+            } ?: navController.navigate(target.route)
         }
     }
 
@@ -70,25 +77,25 @@ fun App(
                 ) { backStackEntry ->
                     backStackEntry.arguments?.getGameType()?.let { type ->
                         // TODO: update type specific setup when more games available
-                            LaunchedEffect(Unit) {
-                                gameOptionsViewModel.setGameType(type)
-                            }
+                        LaunchedEffect(Unit) {
+                            gameOptionsViewModel.setGameType(type)
+                        }
 
-                            val gameOptions by gameOptionsViewModel.gameOptions.collectAsStateWithLifecycle()
+                        val gameOptions by gameOptionsViewModel.gameOptions.collectAsStateWithLifecycle()
 
-                            SelectNumberOfPlayers(
-                                numberOfPlayers = gameOptions.numberOfPlayers,
-                                onSelectedNumberChange = gameOptionsViewModel::setNumberOfPlayers,
-                                onNextClick = {
-                                    gameOptionsViewModel.initializePlayersMap()
-
-                                    navController.navigate(
-                                        NavigationRoutes.EnterPlayerNames.route
-                                    )
-                                },
-                                onCloseClick = navController::popBackStack,
-                            )
-                        } ?: navController.popBackStack()
+                        SelectNumberOfPlayers(
+                            numberOfPlayers = gameOptions.numberOfPlayers,
+                            onSelectedNumberChange = gameOptionsViewModel::setNumberOfPlayers,
+                            onNextClick = {
+                                gameOptionsViewModel.initializePlayersMap()
+                                navController.navigate(NavigationRoutes.EnterPlayerNames.route)
+                            },
+                            onCloseClick = {
+                                navController.popBackStack()
+                                gameOptionsViewModel.reset()
+                            },
+                        )
+                    } ?: navController.popBackStack()
                 }
 
                 composable(route = NavigationRoutes.EnterPlayerNames.route) {
@@ -97,11 +104,12 @@ fun App(
 
                     EnterPlayerNames(
                         onNextClick = {
-                            val route = if (gameType.isDicePoker()) {
+                            /*val route = if (gameType.isDicePoker()) {
                                 NavigationRoutes.SelectNumberOfColumns.route
                             } else {
-                                NavigationRoutes.GameScreen.route
-                            }
+                                // TODO: create game in view model and then navigate
+                            }*/
+                            val route = NavigationRoutes.SelectNumberOfColumns.route
                             navController.navigate(route)
                         },
                         onBackClick = navController::popBackStack,
@@ -110,6 +118,7 @@ fun App(
                                 route = NavigationRoutes.Home.route,
                                 inclusive = false
                             )
+                            gameOptionsViewModel.reset()
                         },
                         players = gameOptions.players,
                         onUpdatePlayerName = gameOptionsViewModel::updatePlayerName,
@@ -127,6 +136,7 @@ fun App(
                                 route = NavigationRoutes.Home.route,
                                 inclusive = false
                             )
+                            gameOptionsViewModel.reset()
                         },
                         onBackClick = navController::popBackStack,
                         onSelectedNumberChange = gameOptionsViewModel::updateNumberOfColumns,
@@ -139,13 +149,21 @@ fun App(
                     arguments = NavigationRoutes.GameScreen.createArgumentsList(),
                 ) { backStackEntry ->
                     backStackEntry.arguments?.getGameId()?.let { id ->
-                        /*LaunchedEffect(Unit) {
-                            gameOptionsViewModel.setGameType(type)
-                        }*/
+                        val viewModel = koinViewModel<GameViewModel>()
+                        val game by viewModel.game.collectAsStateWithLifecycle()
+                        val selectedPlayerId by viewModel.selectedPlayerId.collectAsStateWithLifecycle()
 
-                        Scaffold(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
-                            Text(
-                                text = "$id"
+                        LaunchedEffect(Unit) {
+                            viewModel.getGame(id)
+                        }
+
+                        game?.let { g ->
+                            Game(
+                                modifier = Modifier.fillMaxSize(),
+                                playerInfos = g.players,
+                                selectedPlayerId = selectedPlayerId,
+                                onSelectedPlayerClick = viewModel::updateSelectedPlayer,
+                                onPointsChange = viewModel::updatePoints
                             )
                         }
                     } ?: navController.popBackStack()
@@ -153,4 +171,19 @@ fun App(
             }
         }
     }
+}
+
+fun NavController.navigateAndPopBackstack(
+    destination: String,
+    popUpToRoute: String,
+    isInclusive: Boolean
+) {
+    navigate(
+        destination,
+        navOptions {
+            popUpTo(popUpToRoute) {
+                inclusive = isInclusive
+            }
+        }
+    )
 }

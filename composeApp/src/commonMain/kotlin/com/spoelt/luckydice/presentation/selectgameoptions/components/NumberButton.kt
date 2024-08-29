@@ -11,15 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.spoelt.luckydice.presentation.theme.lightBlue
-import com.spoelt.luckydice.presentation.theme.lightPink
-
-private val linearGradient = Brush.linearGradient(
-    colors = listOf(lightBlue, lightPink)
-)
+import com.spoelt.luckydice.presentation.theme.primaryGradient
 
 @Composable
 fun NumberButton(
@@ -31,7 +25,7 @@ fun NumberButton(
         modifier = Modifier
             .size(100.dp)
             .clip(RoundedCornerShape(12.dp))
-            .background(linearGradient),
+            .background(primaryGradient),
         shape = RoundedCornerShape(12.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent
