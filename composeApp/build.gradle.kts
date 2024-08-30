@@ -57,6 +57,7 @@ kotlin {
             implementation(libs.room.runtime)
             implementation(libs.sqlite.bundled)
             implementation(libs.compottie)
+            implementation(libs.napier)
         }
     }
 }

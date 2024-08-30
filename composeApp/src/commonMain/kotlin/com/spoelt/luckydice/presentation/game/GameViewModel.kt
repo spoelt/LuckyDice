@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.spoelt.luckydice.domain.model.DicePokerGame
 import com.spoelt.luckydice.domain.model.LuckyDiceNavigationTarget
 import com.spoelt.luckydice.domain.model.PlayerColumn
+import com.spoelt.luckydice.domain.model.PlayerInfo
 import com.spoelt.luckydice.domain.model.PlayerPoints
 import com.spoelt.luckydice.domain.repository.GameRepository
 import com.spoelt.luckydice.presentation.navigation.NavigationRoutes
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.koin.core.logger.Logger
 
 class GameViewModel(
     private val gameRepository: GameRepository,
@@ -157,18 +160,42 @@ class GameViewModel(
     fun finishGame() {
         viewModelScope.launch {
             _game.value?.let { game ->
-                val longArray = gameRepository.updatePoints(game.players.flatMap { it.columns })
-                longArray.forEachIndexed { index, l ->
-                    println("$index, $l")
+                val endOfGamePoints = getEndOfGamePoints(game.players)
+                val insertedRows = gameRepository.updatePoints(endOfGamePoints)
+
+                val home = NavigationRoutes.Home.route
+                val hasInsertErrors = insertedRows.any { it == -1L }
+                val route = if (hasInsertErrors) {
+                    Napier.e(message = "Error updating points rows")
+                    home
+                } else {
+                    NavigationRoutes.ResultsScreen.createRoute(game.id)
                 }
 
-                val route = NavigationRoutes.ResultsScreen.createRoute(game.id)
                 val target = LuckyDiceNavigationTarget(
                     route = route,
-                    popUpToRoute = NavigationRoutes.Home.route,
+                    popUpToRoute = home,
+                    inclusive = hasInsertErrors
                 )
                 _navigateEvent.emit(target)
             }
+        }
+    }
+
+    /**
+     * If fields haven't been filled but the game should be ended, change all non-filled points
+     * fields from -1 to 0.
+     */
+    private fun getEndOfGamePoints(players: List<PlayerInfo>) = players.flatMap { player ->
+        player.columns.map { column ->
+            val updatedPoints = column.points.mapValues { (_, point) ->
+                if (point.pointsValue == -1) {
+                    point.copy(pointsValue = 0)
+                } else {
+                    point
+                }
+            }
+            column.copy(points = updatedPoints)
         }
     }
 
