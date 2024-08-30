@@ -40,7 +40,7 @@ fun NumberedDice(type: NumberedDiceType) {
 
     Box(
         modifier = Modifier
-            .size(25.dp)
+            .size(30.dp)
             .clip(RoundedCornerShape(4.dp))
             .background(primaryGradient)
     ) {
