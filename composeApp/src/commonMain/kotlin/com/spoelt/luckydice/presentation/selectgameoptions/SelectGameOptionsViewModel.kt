@@ -78,12 +78,20 @@ class SelectGameOptionsViewModel(
 
     fun createGame() {
         viewModelScope.launch {
-            val gameId = gameRepository.createDicePokerGame(_gameOptions.value)
+            val updatedPlayers = trimPlayerNames(_gameOptions.value.players)
+            val updatedGame = _gameOptions.value.copy(players = updatedPlayers)
+            val gameId = gameRepository.createDicePokerGame(updatedGame)
             val navigationTarget = LuckyDiceNavigationTarget(
                 route = NavigationRoutes.GameScreen.createRoute(gameId),
                 popUpToRoute = NavigationRoutes.Home.route,
             )
             _navigateEvent.emit(navigationTarget)
+        }
+    }
+
+    private fun trimPlayerNames(players: Map<Int, String>?): Map<Int, String>? {
+        return players?.mapValues { (_, name) ->
+            name.trim()
         }
     }
 

@@ -45,7 +45,7 @@ fun EnterPlayerNames(
     type: GameType?
 ) {
     val isBottomBarButtonEnabled = remember(players) {
-        players?.values?.none { it.isEmpty() } ?: false
+        players?.values?.none { it.isBlank() } ?: false
     }
     val bottomBarStringResId = remember(type) {
         if (type.isDicePoker()) {
