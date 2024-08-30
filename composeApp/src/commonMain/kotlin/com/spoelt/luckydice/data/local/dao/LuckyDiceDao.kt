@@ -5,14 +5,11 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Upsert
 import com.spoelt.luckydice.data.model.DicePokerGameCreationEntity
 import com.spoelt.luckydice.data.model.GameWithPlayersAndColumns
 import com.spoelt.luckydice.data.model.PlayerColumnEntity
 import com.spoelt.luckydice.data.model.PlayerInfoEntity
 import com.spoelt.luckydice.data.model.PlayerPointsEntity
-import com.spoelt.luckydice.data.model.toDicePokerGameCreationEntity
-import com.spoelt.luckydice.domain.model.DicePokerGameCreation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -28,19 +25,22 @@ interface LuckyDiceDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDicePokerPlayerColumnInfo(columns: List<PlayerColumnEntity>): List<Long>
 
-    @Upsert
-    suspend fun upsertPlayerPoints(playerPoints: List<PlayerPointsEntity>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPlayerPoints(playerPoints: List<PlayerPointsEntity>): List<Long>
 
     @Transaction
     @Query("SELECT * FROM dice_poker_games WHERE game_id = :gameId")
     suspend fun getDicePokerGameWithPlayers(gameId: Long): GameWithPlayersAndColumns?
 
     @Transaction
-    suspend fun createDicePokerGame(game: DicePokerGameCreation): Long {
+    suspend fun createDicePokerGame(
+        game: DicePokerGameCreationEntity,
+        players: Map<Int, String>?
+    ): Long {
         return withContext(Dispatchers.IO) {
-            val gameId = insertDicePokerGame(game.toDicePokerGameCreationEntity())
+            val gameId = insertDicePokerGame(game)
 
-            game.players?.let { players ->
+            players?.let { players ->
                 val playersToInsert = players.map { (_, name) ->
                     PlayerInfoEntity(
                         gameId = gameId,
@@ -69,7 +69,7 @@ interface LuckyDiceDao {
                     }
                 }
 
-                upsertPlayerPoints(playerColumnPointsToInsert)
+                insertPlayerPoints(playerColumnPointsToInsert)
             }
 
             gameId

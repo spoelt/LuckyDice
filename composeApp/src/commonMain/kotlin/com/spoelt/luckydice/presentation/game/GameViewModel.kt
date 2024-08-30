@@ -3,9 +3,11 @@ package com.spoelt.luckydice.presentation.game
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spoelt.luckydice.domain.model.DicePokerGame
+import com.spoelt.luckydice.domain.model.LuckyDiceNavigationTarget
 import com.spoelt.luckydice.domain.model.PlayerColumn
 import com.spoelt.luckydice.domain.model.PlayerPoints
 import com.spoelt.luckydice.domain.repository.GameRepository
+import com.spoelt.luckydice.presentation.navigation.NavigationRoutes
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,6 +30,9 @@ class GameViewModel(
 
     private val _snackbar = MutableSharedFlow<Boolean>()
     val snackbar = _snackbar.asSharedFlow()
+
+    private val _navigateEvent = MutableSharedFlow<LuckyDiceNavigationTarget>()
+    val navigateEvent = _navigateEvent.asSharedFlow()
 
     private var snackbarJob: Job? = null
 
@@ -107,7 +112,8 @@ class GameViewModel(
 
             this[indexToUpdate] = PlayerPoints(
                 pointsValue = updatedValue,
-                error = isError
+                error = isError,
+                pointId = this[indexToUpdate]!!.pointId
             )
         }
     }
@@ -144,6 +150,24 @@ class GameViewModel(
                 PlayerColumn.FULL_HOUSE -> value != FULL_HOUSE_POINTS && value != FULL_HOUSE_POINTS_SERVED
                 PlayerColumn.POKER -> value != POKER_POINTS && value != POKER_POINTS_SERVED
                 else -> value != GRANDE_VALUE && value != GRANDE_VALUE_SERVED
+            }
+        }
+    }
+
+    fun finishGame() {
+        viewModelScope.launch {
+            _game.value?.let { game ->
+                val longArray = gameRepository.updatePoints(game.players.flatMap { it.columns })
+                longArray.forEachIndexed { index, l ->
+                    println("$index, $l")
+                }
+
+                val route = NavigationRoutes.ResultsScreen.createRoute(game.id)
+                val target = LuckyDiceNavigationTarget(
+                    route = route,
+                    popUpToRoute = NavigationRoutes.Home.route,
+                )
+                _navigateEvent.emit(target)
             }
         }
     }

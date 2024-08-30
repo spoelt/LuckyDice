@@ -19,7 +19,3 @@ data class DicePokerGameCreationEntity(
     val numberOfColumns: Int
 )
 
-fun DicePokerGameCreation.toDicePokerGameCreationEntity() = DicePokerGameCreationEntity(
-    numberOfPlayers = this.numberOfPlayers,
-    numberOfColumns = this.numberOfColumns
-)

@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.spoelt.luckydice.domain.model.LuckyDiceNavigationTarget
 import com.spoelt.luckydice.presentation.game.Game
 import com.spoelt.luckydice.presentation.game.GameViewModel
 import com.spoelt.luckydice.presentation.home.HomeScreen
@@ -42,14 +43,10 @@ fun App(darkTheme: Boolean) {
 
     LaunchedEffect(Unit) {
         gameOptionsViewModel.navigateEvent.collect { target ->
-            target.popUpToRoute?.let { popUpToRoute ->
-                navController.navigateAndPopBackstack(
-                    destination = target.route,
-                    popUpToRoute = popUpToRoute,
-                    isInclusive = target.inclusive
-                )
+            navController.customNavigate(target)
+            target.popUpToRoute?.let {
                 gameOptionsViewModel.reset()
-            } ?: navController.navigate(target.route)
+            }
         }
     }
 
@@ -161,6 +158,12 @@ fun App(darkTheme: Boolean) {
                         }
 
                         LaunchedEffect(Unit) {
+                            viewModel.navigateEvent.collect { target ->
+                                navController.customNavigate(target)
+                            }
+                        }
+
+                        LaunchedEffect(Unit) {
                             viewModel.snackbar.collect {
                                 snackbarHostState.showSnackbar(
                                     message = errorMessage
@@ -175,14 +178,7 @@ fun App(darkTheme: Boolean) {
                                 selectedPlayerId = selectedPlayerId,
                                 onSelectedPlayerClick = viewModel::updateSelectedPlayer,
                                 onPointsChange = viewModel::updatePoints,
-                                onEndGameClick = {
-                                    val route = NavigationRoutes.ResultsScreen.createRoute(id)
-                                    navController.navigateAndPopBackstack(
-                                        destination = route,
-                                        popUpToRoute = NavigationRoutes.Home.route,
-                                        isInclusive = false
-                                    )
-                                },
+                                onEndGameClick = viewModel::finishGame,
                                 snackbarHostState = snackbarHostState,
                             )
                         }
@@ -206,17 +202,15 @@ fun App(darkTheme: Boolean) {
     }
 }
 
-fun NavController.navigateAndPopBackstack(
-    destination: String,
-    popUpToRoute: String,
-    isInclusive: Boolean
-) {
-    navigate(
-        destination,
-        navOptions {
-            popUpTo(popUpToRoute) {
-                inclusive = isInclusive
+fun NavController.customNavigate(target: LuckyDiceNavigationTarget) {
+    target.popUpToRoute?.let { popUpTo ->
+        navigate(
+            target.route,
+            navOptions {
+                popUpTo(popUpTo) {
+                    inclusive = target.inclusive
+                }
             }
-        }
-    )
+        )
+    } ?: navigate(target.route)
 }
