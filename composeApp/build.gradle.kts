@@ -40,6 +40,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.room.runtime.android)
+            implementation(libs.mockk.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -58,6 +59,13 @@ kotlin {
             implementation(libs.sqlite.bundled)
             implementation(libs.compottie)
             implementation(libs.napier)
+        }
+        commonTest.dependencies {
+            implementation(libs.koin.test)
+            implementation(libs.jetbrains.kotlin.test)
+            implementation(libs.mockk.common)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
         }
     }
 }
@@ -80,6 +88,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/LICENSE.md"
+            excludes += "/META-INF/LICENSE-notice.md"
         }
     }
     buildTypes {

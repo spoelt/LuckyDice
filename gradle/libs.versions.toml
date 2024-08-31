@@ -11,8 +11,12 @@ androidx-test-junit = "1.2.1"
 compose-plugin = "1.6.11"
 compottie = "2.0.0-beta02"
 junit = "4.13.2"
+koinTest = "3.4.0"
 kotlin = "2.0.10"
+kotlinxCoroutinesTest = "1.7.2"
 material3 = "1.2.1"
+mockkAndroid = "1.13.7"
+mockkCommon = "1.12.0"
 napier = "2.7.1"
 navigation-compose = "2.8.0-alpha08"
 koin = "3.6.0-Beta4"
@@ -20,10 +24,13 @@ koin-compose-multiplatform = "1.2.0-Beta4"
 room = "2.7.0-alpha06"
 ksp = "2.0.10-1.0.24"
 sqlite = "2.5.0-alpha06"
+turbine = "1.1.0"
 
 [libraries]
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
+jetbrains-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinTest" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -33,6 +40,9 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockkAndroid" }
+mockk-common = { module = "io.mockk:mockk-common", version.ref = "mockkCommon" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigation-compose" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
@@ -44,6 +54,7 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-runtime-android = { module = "androidx.room:room-runtime-android", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

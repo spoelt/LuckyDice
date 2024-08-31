@@ -163,7 +163,7 @@ private fun OtherPlayers(
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.player_points, player.totalPoints),
+                text = stringResource(Res.string.player_points, player.finalPoints),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp
@@ -213,7 +213,7 @@ private fun FirstPlace(player: PlayerResult) {
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.player_points, player.totalPoints),
+                text = stringResource(Res.string.player_points, player.finalPoints),
                 style = MaterialTheme.typography.headlineSmall,
                 textAlign = TextAlign.Center
             )
