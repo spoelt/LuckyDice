@@ -25,4 +25,8 @@
     <string name="second_place_content_desc">Second place trophy</string>
     <string name="third_place_content_desc">Third place trophy</string>
     <string name="go_home_action">Back to home</string>
+    <plurals name="player_points">
+        <item quantity="one">%1$d point</item>
+        <item quantity="other">%1$d points</item>
+    </plurals>
 </resources>

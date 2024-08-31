@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.spoelt.luckydice.domain.model.PlayerRanking
 import com.spoelt.luckydice.domain.model.PlayerResult
 import io.github.alexzhirkevich.compottie.Compottie
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
@@ -48,6 +50,7 @@ import luckydice.composeapp.generated.resources.third_place
 import luckydice.composeapp.generated.resources.third_place_content_desc
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -61,6 +64,12 @@ fun Results(
     onGoHomeClick: () -> Unit
 ) {
     val players by viewModel.players.collectAsStateWithLifecycle()
+    val winners = remember(players) {
+        players.filter { it.ranking == PlayerRanking.FIRST_PLACE }
+    }
+    val otherPlayers = remember(players) {
+        players.filterNot { it.ranking == PlayerRanking.FIRST_PLACE }
+    }
 
     LaunchedEffect(gameId) {
         viewModel.getPlayerPoints(gameId)
@@ -79,15 +88,10 @@ fun Results(
                     .padding(12.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                players.forEachIndexed { index, player ->
-                    if (index == 0) {
-                        FirstPlace(player)
-                    } else {
-                        OtherPlayers(
-                            player = player,
-                            index = index
-                        )
-                    }
+                FirstPlace(winners)
+
+                otherPlayers.forEach { player ->
+                    OtherPlayers(player)
                 }
             }
 
@@ -111,21 +115,18 @@ fun Results(
 }
 
 @Composable
-private fun OtherPlayers(
-    player: PlayerResult,
-    index: Int
-) {
-    val imageResource = remember(index) {
-        when (index) {
-            1 -> Res.drawable.second_place
-            2 -> Res.drawable.third_place
+private fun OtherPlayers(player: PlayerResult) {
+    val imageResource = remember(player) {
+        when (player.ranking) {
+            PlayerRanking.SECOND_PLACE -> Res.drawable.second_place
+            PlayerRanking.THIRD_PLACE -> Res.drawable.third_place
             else -> null
         }
     }
-    val contentDesc = remember(index) {
-        when (index) {
-            1 -> Res.string.second_place_content_desc
-            2 -> Res.string.third_place_content_desc
+    val contentDesc = remember(player) {
+        when (player.ranking) {
+            PlayerRanking.SECOND_PLACE -> Res.string.second_place_content_desc
+            PlayerRanking.THIRD_PLACE -> Res.string.third_place_content_desc
             else -> null
         }
     }
@@ -163,7 +164,11 @@ private fun OtherPlayers(
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.player_points, player.finalPoints),
+                text = pluralStringResource(
+                    Res.plurals.player_points,
+                    player.finalPoints,
+                    player.finalPoints
+                ),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Normal,
                 fontSize = 16.sp
@@ -174,7 +179,7 @@ private fun OtherPlayers(
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-private fun FirstPlace(player: PlayerResult) {
+private fun FirstPlace(players: List<PlayerResult>) {
     val composition by rememberLottieComposition {
         LottieCompositionSpec.JsonString(
             Res.readBytes("files/first_place.json").decodeToString()
@@ -201,22 +206,28 @@ private fun FirstPlace(player: PlayerResult) {
         Column(
             modifier = Modifier.offset(y = (-12).dp)
         ) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-                    .padding(bottom = 8.dp),
-                text = player.name,
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center
-            )
+            players.forEachIndexed { index, player ->
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp)
+                        .padding(bottom = 8.dp),
+                    text = player.name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    textAlign = TextAlign.Center
+                )
 
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.player_points, player.finalPoints),
-                style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Center
-            )
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(Res.string.player_points, player.finalPoints),
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center
+                )
+
+                if (index != players.lastIndex) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+            }
         }
     }
 }
