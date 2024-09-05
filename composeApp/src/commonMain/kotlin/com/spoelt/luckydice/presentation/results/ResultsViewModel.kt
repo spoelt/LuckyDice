@@ -3,10 +3,14 @@ package com.spoelt.luckydice.presentation.results
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spoelt.luckydice.domain.model.DicePokerGame
+import com.spoelt.luckydice.domain.model.LuckyDiceNavigationTarget
 import com.spoelt.luckydice.domain.model.PlayerRanking
 import com.spoelt.luckydice.domain.model.PlayerResult
 import com.spoelt.luckydice.domain.repository.GameRepository
+import com.spoelt.luckydice.presentation.navigation.NavigationRoutes
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -18,14 +22,21 @@ class ResultsViewModel(
     private val _players = MutableStateFlow<List<PlayerResult>>(emptyList())
     val players = _players.asStateFlow()
 
+    private val _goBackEvent = MutableSharedFlow<Unit>()
+    val goBackEvent = _goBackEvent.asSharedFlow()
+
     fun getPlayerPoints(gameId: Long) {
         viewModelScope.launch {
             gameRepository.getDicePokerGame(gameId)?.let { game ->
                 val playerPointsMap = calculatePlayerPoints(game)
                 val sortedPlayers = createRankedPlayerResults(game, playerPointsMap)
                 _players.update { sortedPlayers }
-            }
+            } ?: navigateBackToHome()
         }
+    }
+
+    private suspend fun navigateBackToHome() {
+        _goBackEvent.emit(Unit)
     }
 
     private fun calculatePlayerPoints(game: DicePokerGame): Map<Long, Int> {

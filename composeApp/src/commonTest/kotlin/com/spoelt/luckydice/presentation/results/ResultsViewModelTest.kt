@@ -26,6 +26,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -182,7 +183,11 @@ class ResultsViewModelTest : KoinTest {
             val initialEmission = awaitItem()
             assertEquals(true, initialEmission.isEmpty())
 
-            expectNoEvents() // No update should be emitted
+            expectNoEvents() // No update for players should be emitted
+        }
+
+        viewModel.goBackEvent.test {
+            assertEquals(Unit, awaitItem())
         }
     }
 

@@ -215,7 +215,7 @@ fun App(darkTheme: Boolean) {
                         Results(
                             modifier = Modifier.fillMaxSize(),
                             gameId = id,
-                            onGoHomeClick = navController::popBackStack
+                            onGoHome = navController::popBackStack
                         )
                     } ?: navController.popBackStack()
                 }

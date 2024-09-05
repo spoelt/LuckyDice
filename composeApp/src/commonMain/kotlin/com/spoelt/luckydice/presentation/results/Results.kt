@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spoelt.luckydice.domain.model.PlayerRanking
 import com.spoelt.luckydice.domain.model.PlayerResult
+import com.spoelt.luckydice.presentation.customNavigate
 import io.github.alexzhirkevich.compottie.Compottie
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
@@ -61,7 +62,7 @@ fun Results(
     modifier: Modifier = Modifier,
     gameId: Long,
     viewModel: ResultsViewModel = koinViewModel(),
-    onGoHomeClick: () -> Unit
+    onGoHome: () -> Unit,
 ) {
     val players by viewModel.players.collectAsStateWithLifecycle()
     val winners = remember(players) {
@@ -73,6 +74,12 @@ fun Results(
 
     LaunchedEffect(gameId) {
         viewModel.getPlayerPoints(gameId)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.goBackEvent.collect {
+            onGoHome()
+        }
     }
 
     Scaffold(modifier = modifier) {
@@ -103,7 +110,7 @@ fun Results(
                     .padding(bottom = 6.dp)
                     .fillMaxWidth()
                     .navigationBarsPadding(),
-                onClick = onGoHomeClick,
+                onClick = onGoHome,
             ) {
                 Text(
                     text = stringResource(Res.string.go_home_action),
