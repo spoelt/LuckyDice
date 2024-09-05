@@ -3,10 +3,14 @@ package com.spoelt.luckydice.presentation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -152,6 +156,7 @@ fun App(darkTheme: Boolean) {
                         val selectedPlayerId by viewModel.selectedPlayerId.collectAsStateWithLifecycle()
                         val snackbarHostState = remember { SnackbarHostState() }
                         val errorMessage = stringResource(Res.string.invalid_input)
+                        val lifecycleOwner = LocalLifecycleOwner.current
 
                         LaunchedEffect(Unit) {
                             viewModel.getGame(id)
@@ -168,6 +173,23 @@ fun App(darkTheme: Boolean) {
                                 snackbarHostState.showSnackbar(
                                     message = errorMessage
                                 )
+                            }
+                        }
+
+                        DisposableEffect(lifecycleOwner) {
+                            val lifecycle = lifecycleOwner.lifecycle
+                            val observer = LifecycleEventObserver { _, event ->
+                                when (event) {
+                                    Lifecycle.Event.ON_START -> viewModel.persistGamePeriodically()
+                                    Lifecycle.Event.ON_STOP -> viewModel.cancelPersistGameJob()
+                                    else -> {}
+                                }
+                            }
+
+                            lifecycle.addObserver(observer)
+
+                            onDispose {
+                                lifecycle.removeObserver(observer)
                             }
                         }
 

@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.mokkery)
 }
 
 kotlin {
@@ -40,7 +41,6 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.room.runtime.android)
-            implementation(libs.mockk.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -63,7 +63,6 @@ kotlin {
         commonTest.dependencies {
             implementation(libs.koin.test)
             implementation(libs.jetbrains.kotlin.test)
-            implementation(libs.mockk.common)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
         }

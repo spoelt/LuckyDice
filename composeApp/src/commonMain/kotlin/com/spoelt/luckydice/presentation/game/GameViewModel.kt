@@ -19,10 +19,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import org.koin.core.logger.Logger
 
 class GameViewModel(
-    private val gameRepository: GameRepository,
+    private val gameRepository: GameRepository
 ) : ViewModel() {
 
     private val _game = MutableStateFlow<DicePokerGame?>(null)
@@ -38,14 +37,19 @@ class GameViewModel(
     val navigateEvent = _navigateEvent.asSharedFlow()
 
     private var snackbarJob: Job? = null
+    private var persistGameJob: Job? = null
 
     fun getGame(id: Long) {
         viewModelScope.launch {
             gameRepository.getDicePokerGame(id)?.let { game ->
                 _game.value = game
                 _selectedPlayerId.value = game.players.firstOrNull()?.id
-            }
+            } ?: navigateBackToHome()
         }
+    }
+
+    private suspend fun navigateBackToHome() {
+        _navigateEvent.emit(LuckyDiceNavigationTarget(route = NavigationRoutes.Home.route))
     }
 
     fun updateSelectedPlayer(id: Long) {
@@ -199,6 +203,33 @@ class GameViewModel(
         }
     }
 
+    fun persistGamePeriodically(interval: Long = AUTO_SAVE_INTERVAL) {
+        cancelPersistGameJob()
+        persistGameJob = viewModelScope.launch {
+            while (isActive) {
+                delay(interval)
+                _game.value?.let { game ->
+                    persistGame(game)
+                }
+            }
+        }
+    }
+
+    private suspend fun persistGame(game: DicePokerGame) {
+        val points = game.players.flatMap { player ->
+            player.columns
+        }
+        val insertedRows = gameRepository.updatePoints(points)
+        val hasInsertErrors = insertedRows.any { it == -1L }
+        if (hasInsertErrors) {
+            Napier.e("Failed to persist game")
+        }
+    }
+
+    fun cancelPersistGameJob() {
+        persistGameJob?.cancel()
+    }
+
     companion object {
         const val NUMBER_OF_DICE = 5
         const val DEFAULT_VALUE = -1
@@ -211,5 +242,6 @@ class GameViewModel(
         const val GRANDE_VALUE = 50
         const val GRANDE_VALUE_SERVED = 100
         const val DEBOUNCE_DELAY = 1000L
+        const val AUTO_SAVE_INTERVAL = 60000L
     }
 }

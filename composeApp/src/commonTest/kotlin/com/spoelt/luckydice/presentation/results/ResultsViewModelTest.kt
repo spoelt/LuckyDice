@@ -8,8 +8,9 @@ import com.spoelt.luckydice.domain.model.PlayerPoints
 import com.spoelt.luckydice.domain.model.PlayerRanking
 import com.spoelt.luckydice.domain.model.PlayerResult
 import com.spoelt.luckydice.domain.repository.GameRepository
-import io.mockk.coEvery
-import io.mockk.mockkClass
+import dev.mokkery.answering.returns
+import dev.mokkery.everySuspend
+import dev.mokkery.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -31,7 +32,7 @@ import kotlin.test.assertTrue
 class ResultsViewModelTest : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private val gameRepository: GameRepository = mockkClass(GameRepository::class)
+    private val gameRepository: GameRepository = mock<GameRepository>()
     private val viewModel: ResultsViewModel by inject()
 
     private val testModule = module {
@@ -57,7 +58,7 @@ class ResultsViewModelTest : KoinTest {
         // Arrange
         val gameId = 1L
         val game = createNormalGame(gameId)
-        coEvery { gameRepository.getDicePokerGame(gameId) } returns game
+        everySuspend { gameRepository.getDicePokerGame(gameId) } returns game
 
         // Act & Assert
         viewModel.players.test {
@@ -85,7 +86,7 @@ class ResultsViewModelTest : KoinTest {
         // Arrange
         val gameId = 2L
         val game = createThreeWayTie(gameId)
-        coEvery { gameRepository.getDicePokerGame(gameId) } returns game
+        everySuspend { gameRepository.getDicePokerGame(gameId) } returns game
 
         // Act & Assert
         viewModel.players.test {
@@ -105,7 +106,7 @@ class ResultsViewModelTest : KoinTest {
         // Arrange
         val gameId = 3L
         val game = createGameWithTieForSecondPlace(gameId)
-        coEvery { gameRepository.getDicePokerGame(gameId) } returns game
+        everySuspend { gameRepository.getDicePokerGame(gameId) } returns game
 
         // Act & Assert
         viewModel.players.test {
@@ -129,7 +130,7 @@ class ResultsViewModelTest : KoinTest {
         // Arrange
         val gameId = 5L
         val game = createGameWithFourPlayers(gameId)
-        coEvery { gameRepository.getDicePokerGame(gameId) } returns game
+        everySuspend { gameRepository.getDicePokerGame(gameId) } returns game
 
         // Act & Assert
         viewModel.players.test {
@@ -152,7 +153,7 @@ class ResultsViewModelTest : KoinTest {
         // Arrange
         val gameId = 6L
         val game = createTwoColumnGameWithTwoPlayers(gameId)
-        coEvery { gameRepository.getDicePokerGame(gameId) } returns game
+        everySuspend { gameRepository.getDicePokerGame(gameId) } returns game
 
         // Act & Assert
         viewModel.players.test {
@@ -172,7 +173,7 @@ class ResultsViewModelTest : KoinTest {
     fun getPlayerPoints_nonExistentGame_noEventsEmitted() = runTest {
         // Arrange
         val nonExistentGameId = 999L
-        coEvery { gameRepository.getDicePokerGame(999L) } returns null
+        everySuspend { gameRepository.getDicePokerGame(999L) } returns null
 
         // Act & Assert
         viewModel.players.test {

@@ -219,13 +219,17 @@ private fun FirstPlace(players: List<PlayerResult>) {
 
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(Res.string.player_points, player.finalPoints),
+                    text = pluralStringResource(
+                        Res.plurals.player_points,
+                        player.finalPoints,
+                        player.finalPoints
+                    ),
                     style = MaterialTheme.typography.headlineSmall,
                     textAlign = TextAlign.Center
                 )
 
                 if (index != players.lastIndex) {
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }
