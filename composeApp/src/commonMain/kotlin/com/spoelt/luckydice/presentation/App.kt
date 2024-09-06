@@ -159,10 +159,6 @@ fun App(darkTheme: Boolean) {
                         val lifecycleOwner = LocalLifecycleOwner.current
 
                         LaunchedEffect(Unit) {
-                            viewModel.getGame(id)
-                        }
-
-                        LaunchedEffect(Unit) {
                             viewModel.navigateEvent.collect { target ->
                                 navController.customNavigate(target)
                             }
@@ -180,9 +176,14 @@ fun App(darkTheme: Boolean) {
                             val lifecycle = lifecycleOwner.lifecycle
                             val observer = LifecycleEventObserver { _, event ->
                                 when (event) {
-                                    Lifecycle.Event.ON_START -> viewModel.persistGamePeriodically()
-                                    Lifecycle.Event.ON_STOP -> viewModel.cancelPersistGameJob()
-                                    else -> {}
+                                    Lifecycle.Event.ON_START -> {
+                                        viewModel.startSaveGameJob()
+                                        viewModel.getGame(id)
+                                    }
+
+                                    Lifecycle.Event.ON_STOP -> viewModel.saveGameOnStop()
+
+                                    else -> Unit
                                 }
                             }
 

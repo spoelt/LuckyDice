@@ -37,7 +37,7 @@ class GameViewModel(
     val navigateEvent = _navigateEvent.asSharedFlow()
 
     private var snackbarJob: Job? = null
-    private var persistGameJob: Job? = null
+    private var saveGameJob: Job? = null
 
     fun getGame(id: Long) {
         viewModelScope.launch {
@@ -203,31 +203,39 @@ class GameViewModel(
         }
     }
 
-    fun persistGamePeriodically(interval: Long = AUTO_SAVE_INTERVAL) {
-        cancelPersistGameJob()
-        persistGameJob = viewModelScope.launch {
+    fun startSaveGameJob(interval: Long = AUTO_SAVE_INTERVAL) {
+        cancelSaveGameJob()
+        saveGameJob = viewModelScope.launch {
             while (isActive) {
                 delay(interval)
-                _game.value?.let { game ->
-                    persistGame(game)
-                }
+                saveGame()
             }
         }
     }
 
-    private suspend fun persistGame(game: DicePokerGame) {
-        val points = game.players.flatMap { player ->
-            player.columns
-        }
-        val insertedRows = gameRepository.updatePoints(points)
-        val hasInsertErrors = insertedRows.any { it == -1L }
-        if (hasInsertErrors) {
-            Napier.e("Failed to persist game")
+    private suspend fun saveGame() {
+        _game.value?.let { game ->
+            val points = game.players.flatMap { player ->
+                player.columns
+            }
+            val insertedRows = gameRepository.updatePoints(points)
+            val hasInsertErrors = insertedRows.any { it == -1L }
+            if (hasInsertErrors) {
+                Napier.e("Failed to persist game")
+            }
         }
     }
 
-    fun cancelPersistGameJob() {
-        persistGameJob?.cancel()
+    fun cancelSaveGameJob() {
+        saveGameJob?.cancel()
+    }
+
+    fun saveGameOnStop() {
+        cancelSaveGameJob()
+
+        viewModelScope.launch {
+            saveGame()
+        }
     }
 
     companion object {

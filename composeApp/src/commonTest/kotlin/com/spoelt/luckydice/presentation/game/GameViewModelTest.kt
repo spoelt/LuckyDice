@@ -178,11 +178,11 @@ class GameViewModelTest : KoinTest {
         everySuspend { gameRepository.updatePoints(any()) } returns listOf(1L)
 
         viewModel.getGame(game.id)
-        viewModel.persistGamePeriodically(1000L)
+        viewModel.startSaveGameJob(1000L)
 
         advanceTimeBy(500L)
 
-        viewModel.cancelPersistGameJob()
+        viewModel.cancelSaveGameJob()
 
         advanceTimeBy(600L)
 
@@ -289,7 +289,7 @@ class GameViewModelTest : KoinTest {
         everySuspend { gameRepository.updatePoints(any()) } returns listOf(1L)
 
         viewModel.getGame(game.id)
-        viewModel.persistGamePeriodically(1000L)
+        viewModel.startSaveGameJob(1000L)
 
         // Advance time by slightly more than the test interval
         testScheduler.advanceTimeBy(1100L)
@@ -298,7 +298,7 @@ class GameViewModelTest : KoinTest {
         verifySuspend(mode = VerifyMode.exactly(1)) { gameRepository.updatePoints(any()) }
 
         // Cancel the job to end the test
-        viewModel.cancelPersistGameJob()
+        viewModel.cancelSaveGameJob()
     }
 
     private fun createTestDiceGame() = DicePokerGame(
