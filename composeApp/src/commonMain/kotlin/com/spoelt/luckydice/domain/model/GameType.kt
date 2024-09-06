@@ -2,8 +2,7 @@ package com.spoelt.luckydice.domain.model
 
 enum class GameType(val value: String) {
     DICE_POKER("dice_poker"),
-    YAHTZEE("yahtzee"),
-    FARKLES("farkles");
+    YAHTZEE("yahtzee");
 
     companion object : EnumFinder<String, GameType>(entries.associateBy { it.value })
 }

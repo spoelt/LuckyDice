@@ -13,7 +13,6 @@ class HomeViewModel : ViewModel() {
     private fun getAvailableGameTypes() = listOf(
         GameType.DICE_POKER,
         GameType.YAHTZEE,
-        GameType.FARKLES
     )
 
 }

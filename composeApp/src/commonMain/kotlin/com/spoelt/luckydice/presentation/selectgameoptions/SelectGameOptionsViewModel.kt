@@ -37,7 +37,6 @@ class SelectGameOptionsViewModel(
             }
 
             GameType.YAHTZEE -> TODO()
-            GameType.FARKLES -> TODO()
         }
     }*/
 

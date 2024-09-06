@@ -23,7 +23,6 @@ import luckydice.composeapp.generated.resources.Res
 import luckydice.composeapp.generated.resources.dice_background
 import luckydice.composeapp.generated.resources.game_option_background_content_desc
 import luckydice.composeapp.generated.resources.game_option_dice_poker
-import luckydice.composeapp.generated.resources.game_option_farkles
 import luckydice.composeapp.generated.resources.game_option_yahtzee
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -40,7 +39,6 @@ fun GameOption(
         when (type) {
             GameType.DICE_POKER -> Res.string.game_option_dice_poker
             GameType.YAHTZEE -> Res.string.game_option_yahtzee
-            GameType.FARKLES -> Res.string.game_option_farkles
         }
     }
 
