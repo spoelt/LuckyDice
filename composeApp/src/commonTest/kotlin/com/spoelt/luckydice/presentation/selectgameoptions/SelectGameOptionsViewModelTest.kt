@@ -23,6 +23,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.KoinTest
+import org.koin.test.get
 import org.koin.test.inject
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -36,7 +37,7 @@ class SelectGameOptionsViewModelTest : KoinTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val gameRepository: GameRepository = mock<GameRepository>()
-    private val viewModel: SelectGameOptionsViewModel by inject()
+    private lateinit var viewModel: SelectGameOptionsViewModel
 
     private val testModule = module {
         single { SelectGameOptionsViewModel(gameRepository) }
@@ -48,6 +49,7 @@ class SelectGameOptionsViewModelTest : KoinTest {
         startKoin {
             modules(testModule)
         }
+        viewModel = get()
     }
 
     @AfterTest
