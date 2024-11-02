@@ -1,14 +1,33 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# LuckyDice
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+## Overview
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+LuckyDice is a Kotlin Multiplatform (KMP) app that enables users to play Dice Poker and Yahtzee ⚠️ (Note: Yahtzee is still under development). This project is designed for both Android and iOS and uses Compose Multiplatform to enable sharing UI components. The iOS functionality is still untested, however, and will be verified once I get my new MacBook. At this point, only the Android implementation has been tested manually.
 
+## Technologies Used
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+- **Kotlin:** For Android development.
+- **Compose Multiplatform:** For modern UI components.
+- **Koin:** For dependency injection.
+- **Flow:** For handling asynchronous data streams.
+- **Room:** For persisting game data.
+- **Compottie:** For displaying Lottie animations in Compose Multiplatform projects.
+
+## Setup
+
+1. **Clone the Repository:**
+
+    ```bash
+    git clone https://github.com/spoelt/LuckyDice.git
+    ```
+2. **Open the Project:**
+
+    Open the project in Android Studio/Fleet.
+
+3. **Build the Project:**
+
+    Make sure all dependencies are downloaded and synced by building the project.
+
+4. **Run the App:**
+
+    Connect a device or start an emulator, then run the app. Happy gambling!
